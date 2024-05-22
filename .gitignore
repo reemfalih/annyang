@@ -4,3 +4,4 @@ npm-debug.log
 .vscode
 .idx
 .DS_Store
+dist
