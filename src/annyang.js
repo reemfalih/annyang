@@ -17,7 +17,8 @@
 var annyang;
 
 // Get the SpeechRecognition object, while handling browser prefixes
-var SpeechRecognition = root.SpeechRecognition ||
+var SpeechRecognition =
+  root.SpeechRecognition ||
   root.webkitSpeechRecognition ||
   root.mozSpeechRecognition ||
   root.msSpeechRecognition ||
@@ -99,10 +100,7 @@ var initIfNeeded = function () {
 var registerCommand = function (command, callback, originalPhrase) {
   commandsList.push({ command, callback, originalPhrase });
   if (debugState) {
-    logMessage(
-      'Command successfully loaded: %c' + originalPhrase,
-      debugStyle
-    );
+    logMessage('Command successfully loaded: %c' + originalPhrase, debugStyle);
   }
 };
 
@@ -124,22 +122,14 @@ var parseResults = function (results) {
       if (result) {
         var parameters = result.slice(1);
         if (debugState) {
-          logMessage(
-            'command matched: %c' + currentCommand.originalPhrase,
-            debugStyle
-          );
+          logMessage('command matched: %c' + currentCommand.originalPhrase, debugStyle);
           if (parameters.length) {
             logMessage('with parameters', parameters);
           }
         }
         // execute the matched command
         currentCommand.callback.apply(this, parameters);
-        invokeCallbacks(
-          callbacks.resultMatch,
-          commandText,
-          currentCommand.originalPhrase,
-          results
-        );
+        invokeCallbacks(callbacks.resultMatch, commandText, currentCommand.originalPhrase, results);
         return;
       }
     }
@@ -178,11 +168,7 @@ annyang = {
           registerCommand(commandToRegExp(phrase), cb, phrase);
         } else if (typeof cb === 'object' && cb.regexp instanceof RegExp) {
           // register the command
-          registerCommand(
-            new RegExp(cb.regexp.source, 'i'),
-            cb.callback,
-            phrase
-          );
+          registerCommand(new RegExp(cb.regexp.source, 'i'), cb.callback, phrase);
         } else {
           if (debugState) {
             logMessage('Can not register command: %c' + phrase, debugStyle);
