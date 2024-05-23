@@ -15,7 +15,7 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "format": "prettier --write 'src/**/*.js'",
+    "format": "prettier --write 'src/**/*.js' 'package.json' '.eslintrc.json' 'rollup.config.mjs'",
     "lint": "eslint 'src/**/*.js'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

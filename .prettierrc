@@ -8,5 +8,13 @@
   "endOfLine": "lf",
   "insertPragma": false,
   "requirePragma": false,
-  "arrowParens": "avoid"
+  "arrowParens": "avoid",
+  "overrides": [
+    {
+      "files": "*.json",
+      "options": {
+        "parser": "json"
+      }
+    }
+  ]
 }
