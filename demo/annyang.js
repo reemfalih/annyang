@@ -1,1 +1,1 @@
-./dist/annyang.js
+../dist/annyang.js
