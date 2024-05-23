@@ -15,7 +15,8 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "dev": "npm-run-all --parallel lint:watch format:watch",
+    "serve": "rollup -c -w",
+    "dev": "npm-run-all --parallel lint:watch format:watch serve",
     "format": "prettier --write 'src/**/*.js' 'package.json' '.eslintrc.json' 'rollup.config.mjs'",
     "format:watch": "chokidar 'src/**/*.js' -c 'npm run format'",
     "lint": "eslint 'src/**/*.js'",
@@ -51,6 +52,8 @@
     "eslint-plugin-prettier": "^5.1.3",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.2.5",
-    "rollup": "^4.18.0"
+    "rollup": "^4.18.0",
+    "rollup-plugin-livereload": "^2.0.5",
+    "rollup-plugin-serve": "^1.1.1"
   }
 }
