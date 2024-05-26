@@ -17,9 +17,12 @@
     "build": "rollup -c",
     "serve": "rollup -c -w",
     "dev": "npm-run-all --parallel lint:watch format:watch serve",
+    "docs": "documentation build src/annyang.js -f md -o docs/README.md",
     "format": "prettier --write 'src/**/*.js' 'package.json' '.eslintrc.json' 'rollup.config.mjs'",
     "format:watch": "chokidar 'src/**/*.js' -c 'npm run format'",
-    "lint": "eslint 'src/**/*.js'",
+    "lint": "npm-run-all -c lint:src lint:docs",
+    "lint:docs": "documentation lint src/annyang.js",
+    "lint:src": "eslint 'src/**/*.js'",
     "lint:watch": "chokidar 'src/**/*.js' -c 'npm run lint'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -45,6 +48,7 @@
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.4",
     "chokidar-cli": "^3.0.0",
+    "documentation": "^14.0.3",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^9.1.0",
