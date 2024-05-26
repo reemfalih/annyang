@@ -13,11 +13,11 @@ export default {
       name: 'annyang',
     },
     {
-      file: 'dist/annyang.mjs',
+      file: 'dist/annyang.mjs.js',
       format: 'esm',
     },
     {
-      file: 'dist/annyang.cjs',
+      file: 'dist/annyang.cjs.js',
       format: 'cjs',
     },
   ],
