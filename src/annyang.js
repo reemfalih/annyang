@@ -277,7 +277,7 @@ annyang = {
   /**
    * Set the language the user will speak in. If this method is not called, defaults to 'en-US'.
    *
-   * @param {String} language - The language (locale)
+   * @param {string} language - The language (locale)
    * @method setLanguage
    * @see [Languages](https://github.com/TalAter/annyang/blob/master/docs/FAQ.md#what-languages-are-supported)
    */
@@ -305,7 +305,7 @@ annyang = {
    * // Don't respond to howdy or hi
    * annyang.removeCommands(['howdy', 'hi']);
    * ````
-   * @param {String|Array|Undefined} [commandsToRemove] - Commands to remove
+   * @param {string|string[]|undefined} [commandsToRemove] - Commands to remove
    * @method removeCommands
    */
   removeCommands: function (commandsToRemove) {
@@ -382,8 +382,8 @@ annyang = {
    * // pass local context to a global function called notConnected
    * annyang.addCallback('errorNetwork', notConnected, this);
    * ````
-   * @param {String} type - Name of event that will trigger this callback
-   * @param {Function} callback - The function to call when event is triggered
+   * @param {string} type - Name of event that will trigger this callback
+   * @param {function} callback - The function to call when event is triggered
    * @param {Object} [context] - Optional context for the callback function
    * @method addCallback
    */
@@ -485,7 +485,7 @@ annyang = {
    *   );
    * ````
    *
-   * @param string|array sentences A sentence as a string or an array of strings of possible sentences
+   * @param string|string[] sentences A sentence as a string or an array of strings of possible sentences
    * @returns undefined
    * @method trigger
    */
