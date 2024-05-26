@@ -1,3 +1,5 @@
-[ ] Update CONTRIBUTING.md
-[ ] Add sample regular expression commands to website
-[ ] See interaction with Speech KITT
+- [ ] If typeof window is undefined, console log that this is supposed to be used in the browser
+- [ ] Improve JSDoc for callback function with @callback (https://jsdoc.app/tags-callback)
+- [ ] Update CONTRIBUTING.md
+- [ ] Add sample regular expression commands to website
+- [ ] See interaction with Speech KITT
