@@ -614,7 +614,7 @@ if (SpeechRecognition) {
       commandsList = [];
     }
     if (commands.length) {
-      this.addCommands(commands);
+      annyang.addCommands(commands);
     }
   };
 }
