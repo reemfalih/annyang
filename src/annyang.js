@@ -250,18 +250,19 @@ if (SpeechRecognition) {
    *
    * @method resume
    */
-  (annyang.resume = function () {
+  annyang.resume = function () {
     annyang.start();
-  }),
-    /**
-     * Turn on the output of debug messages to the console. Ugly, but super-handy!
-     *
-     * @param {boolean} [newState=true] - Turn on/off debug messages
-     * @method debug
-     */
-    (annyang.debug = function (newState = true) {
-      debugState = !!newState;
-    });
+  };
+
+  /**
+   * Turn on the output of debug messages to the console. Ugly, but super-handy!
+   *
+   * @param {boolean} [newState=true] - Turn on/off debug messages
+   * @method debug
+   */
+  annyang.debug = function (newState = true) {
+    debugState = !!newState;
+  };
 
   /**
    * Set the language the user will speak in. If this method is not called, defaults to 'en-US'.
