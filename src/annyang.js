@@ -55,7 +55,7 @@ if (SpeechRecognition) {
   const splatParam = /\*\w+/g;
   const escapeRegExp = /[-{}[\]+?.,\\^$|#]/g;
   const commandToRegExp = command => {
-    command = command
+    const parsedCommand = command
       .replace(escapeRegExp, '\\$&')
       .replace(optionalParam, '(?:$1)?')
       .replace(namedParam, (match, optional) => {
@@ -63,7 +63,7 @@ if (SpeechRecognition) {
       })
       .replace(splatParam, '(.*?)')
       .replace(optionalRegex, '\\s*$1?\\s*');
-    return new RegExp('^' + command + '$', 'i');
+    return new RegExp(`^${parsedCommand}$`, 'i');
   };
 
   // This method receives an array of callbacks to iterate over, and invokes each of them
@@ -95,7 +95,7 @@ if (SpeechRecognition) {
   const registerCommand = (command, callback, originalPhrase) => {
     commandsList.push({ command, callback, originalPhrase });
     if (debugState) {
-      logMessage('Command successfully loaded: %c' + originalPhrase, debugStyle);
+      logMessage(`Command successfully loaded: %c${originalPhrase}`, debugStyle);
     }
   };
 
@@ -107,7 +107,7 @@ if (SpeechRecognition) {
       // the text recognized
       commandText = results[i].trim();
       if (debugState) {
-        logMessage('Speech recognized: %c' + commandText, debugStyle);
+        logMessage(`Speech recognized: %c${commandText}`, debugStyle);
       }
 
       // try and match the recognized text to one of the commands on the list
@@ -117,7 +117,7 @@ if (SpeechRecognition) {
         if (result) {
           const parameters = result.slice(1);
           if (debugState) {
-            logMessage('command matched: %c' + currentCommand.originalPhrase, debugStyle);
+            logMessage(`command matched: %c${currentCommand.originalPhrase}`, debugStyle);
             if (parameters.length) {
               logMessage('with parameters', parameters);
             }
@@ -152,7 +152,7 @@ if (SpeechRecognition) {
   annyang.addCommands = commands => {
     initIfNeeded();
 
-    for (let phrase in commands) {
+    for (const phrase in commands) {
       if (commands.hasOwnProperty(phrase)) {
         const cb = window[commands[phrase]] || commands[phrase];
         if (typeof cb === 'function') {
@@ -163,7 +163,7 @@ if (SpeechRecognition) {
           registerCommand(new RegExp(cb.regexp.source, 'i'), cb.callback, phrase);
         } else {
           if (debugState) {
-            logMessage('Can not register command: %c' + phrase, debugStyle);
+            logMessage(`Can not register command: %c${phrase}`, debugStyle);
           }
           continue;
         }
@@ -380,7 +380,7 @@ if (SpeechRecognition) {
   annyang.addCallback = (type, callback, context = undefined) => {
     const cb = window[callback] || callback;
     if (typeof cb === 'function' && callbacks[type] !== undefined) {
-      callbacks[type].push({ callback: cb, context: context });
+      callbacks[type].push({ callback: cb, context });
     }
   };
 
@@ -422,7 +422,7 @@ if (SpeechRecognition) {
       return cb.callback !== callback;
     };
     // Go over each callback type in callbacks store object
-    for (let callbackType in callbacks) {
+    for (const callbackType in callbacks) {
       if (callbacks.hasOwnProperty(callbackType)) {
         // if this is the type user asked to delete, or he asked to delete all, go ahead.
         if (type === undefined || type === callbackType) {
