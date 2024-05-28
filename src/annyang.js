@@ -54,11 +54,11 @@ if (SpeechRecognition) {
   const namedParam = /(\(\?)?:\w+/g;
   const splatParam = /\*\w+/g;
   const escapeRegExp = /[-{}[\]+?.,\\^$|#]/g;
-  const commandToRegExp = function (command) {
+  const commandToRegExp = command => {
     command = command
       .replace(escapeRegExp, '\\$&')
       .replace(optionalParam, '(?:$1)?')
-      .replace(namedParam, function (match, optional) {
+      .replace(namedParam, (match, optional) => {
         return optional ? match : '([^\\s]+)';
       })
       .replace(splatParam, '(.*?)')
@@ -67,18 +67,18 @@ if (SpeechRecognition) {
   };
 
   // This method receives an array of callbacks to iterate over, and invokes each of them
-  const invokeCallbacks = function (callbacks, ...args) {
-    callbacks.forEach(function (callback) {
+  const invokeCallbacks = (callbacks, ...args) => {
+    callbacks.forEach(callback => {
       callback.callback.apply(callback.context, args);
     });
   };
 
-  const isInitialized = function () {
+  const isInitialized = () => {
     return recognition !== undefined;
   };
 
   // method for logging in developer console when debug mode is on
-  const logMessage = function (text, extraParameters) {
+  const logMessage = (text, extraParameters) => {
     if (text.indexOf('%c') === -1 && !extraParameters) {
       console.log(text);
     } else {
@@ -86,13 +86,13 @@ if (SpeechRecognition) {
     }
   };
 
-  const initIfNeeded = function () {
+  const initIfNeeded = () => {
     if (!isInitialized()) {
       annyang.init({}, false);
     }
   };
 
-  const registerCommand = function (command, callback, originalPhrase) {
+  const registerCommand = (command, callback, originalPhrase) => {
     commandsList.push({ command, callback, originalPhrase });
     if (debugState) {
       logMessage('Command successfully loaded: %c' + originalPhrase, debugStyle);
@@ -149,7 +149,7 @@ if (SpeechRecognition) {
    * @method addCommands
    * @see [Commands Object](#commands-object)
    */
-  annyang.addCommands = function (commands) {
+  annyang.addCommands = commands => {
     initIfNeeded();
 
     for (let phrase in commands) {
@@ -191,7 +191,7 @@ if (SpeechRecognition) {
    * @param {Object} [options] - Optional options.
    * @method start
    */
-  annyang.start = function (options) {
+  annyang.start = options => {
     initIfNeeded();
     options = options || {};
     if (options.paused !== undefined) {
@@ -224,7 +224,7 @@ if (SpeechRecognition) {
    *
    * @method abort
    */
-  annyang.abort = function () {
+  annyang.abort = () => {
     autoRestart = false;
     autoRestartCount = 0;
     if (isInitialized()) {
@@ -240,7 +240,7 @@ if (SpeechRecognition) {
    *
    * @method pause
    */
-  annyang.pause = function () {
+  annyang.pause = () => {
     pauseListening = true;
   };
 
@@ -250,7 +250,7 @@ if (SpeechRecognition) {
    *
    * @method resume
    */
-  annyang.resume = function () {
+  annyang.resume = () => {
     annyang.start();
   };
 
@@ -260,7 +260,7 @@ if (SpeechRecognition) {
    * @param {boolean} [newState=true] - Turn on/off debug messages
    * @method debug
    */
-  annyang.debug = function (newState = true) {
+  annyang.debug = (newState = true) => {
     debugState = !!newState;
   };
 
@@ -271,7 +271,7 @@ if (SpeechRecognition) {
    * @method setLanguage
    * @see [Languages](https://github.com/TalAter/annyang/blob/master/docs/FAQ.md#what-languages-are-supported)
    */
-  annyang.setLanguage = function (language) {
+  annyang.setLanguage = language => {
     initIfNeeded();
     recognition.lang = language;
   };
@@ -298,7 +298,7 @@ if (SpeechRecognition) {
    * @param {string|string[]|undefined} [commandsToRemove] - Commands to remove
    * @method removeCommands
    */
-  annyang.removeCommands = function (commandsToRemove) {
+  annyang.removeCommands = commandsToRemove => {
     if (commandsToRemove === undefined) {
       commandsList = [];
     } else {
@@ -359,11 +359,11 @@ if (SpeechRecognition) {
    *
    * #### Examples:
    * ````javascript
-   * annyang.addCallback('error', function() {
+   * annyang.addCallback('error', () => {
    *   $('.myErrorText').text('There was an error!');
    * });
    *
-   * annyang.addCallback('resultMatch', function(userSaid, commandText, phrases) {
+   * annyang.addCallback('resultMatch', (userSaid, commandText, phrases) => {
    *   console.log(userSaid); // sample output: 'hello'
    *   console.log(commandText); // sample output: 'hello (there)'
    *   console.log(phrases); // sample output: ['hello', 'halo', 'yellow', 'polo', 'hello kitty']
@@ -377,10 +377,10 @@ if (SpeechRecognition) {
    * @param {Object} [context] - Optional context for the callback function
    * @method addCallback
    */
-  annyang.addCallback = function (type, callback, context) {
+  annyang.addCallback = (type, callback, context = undefined) => {
     const cb = window[callback] || callback;
     if (typeof cb === 'function' && callbacks[type] !== undefined) {
-      callbacks[type].push({ callback: cb, context: context || this });
+      callbacks[type].push({ callback: cb, context: context });
     }
   };
 
@@ -417,8 +417,8 @@ if (SpeechRecognition) {
    * @returns undefined
    * @method removeCallback
    */
-  annyang.removeCallback = function (type, callback) {
-    const compareWithCallbackParameter = function (cb) {
+  annyang.removeCallback = (type, callback) => {
+    const compareWithCallbackParameter = cb => {
       return cb.callback !== callback;
     };
     // Go over each callback type in callbacks store object
@@ -445,7 +445,7 @@ if (SpeechRecognition) {
    * @return boolean true = SpeechRecognition is on and annyang is listening
    * @method isListening
    */
-  annyang.isListening = function () {
+  annyang.isListening = () => {
     return isListening && !pauseListening;
   };
 
@@ -456,7 +456,7 @@ if (SpeechRecognition) {
    * @returns SpeechRecognition The browser's Speech Recognizer currently used by annyang
    * @method getSpeechRecognizer
    */
-  annyang.getSpeechRecognizer = function () {
+  annyang.getSpeechRecognizer = () => {
     return recognition;
   };
 
@@ -479,7 +479,7 @@ if (SpeechRecognition) {
    * @returns undefined
    * @method trigger
    */
-  annyang.trigger = function (sentences) {
+  annyang.trigger = sentences => {
     if (!annyang.isListening()) {
       if (debugState) {
         if (!isListening) {
@@ -519,7 +519,7 @@ if (SpeechRecognition) {
    * @deprecated
    * @see [Commands Object](#commands-object)
    */
-  annyang.init = function (commands, resetCommands = true) {
+  annyang.init = (commands, resetCommands = true) => {
     // Abort previous instances of recognition already running
     if (recognition && recognition.abort) {
       recognition.abort();
@@ -538,16 +538,16 @@ if (SpeechRecognition) {
     // Sets the language to the default 'en-US'. This can be changed with annyang.setLanguage()
     recognition.lang = 'en-US';
 
-    recognition.onstart = function () {
+    recognition.onstart = () => {
       isListening = true;
       invokeCallbacks(callbacks.start);
     };
 
-    recognition.onsoundstart = function () {
+    recognition.onsoundstart = () => {
       invokeCallbacks(callbacks.soundstart);
     };
 
-    recognition.onerror = function (event) {
+    recognition.onerror = event => {
       invokeCallbacks(callbacks.error, event);
       switch (event.error) {
         case 'network':
@@ -567,7 +567,7 @@ if (SpeechRecognition) {
       }
     };
 
-    recognition.onend = function () {
+    recognition.onend = () => {
       isListening = false;
       invokeCallbacks(callbacks.end);
       // annyang will auto restart if it is closed automatically and not by user action.
@@ -583,7 +583,7 @@ if (SpeechRecognition) {
           }
         }
         if (timeSinceLastStart < 1000) {
-          setTimeout(function () {
+          setTimeout(() => {
             annyang.start({ paused: pauseListening });
           }, 1000 - timeSinceLastStart);
         } else {
@@ -592,7 +592,7 @@ if (SpeechRecognition) {
       }
     };
 
-    recognition.onresult = function (event) {
+    recognition.onresult = event => {
       if (pauseListening) {
         if (debugState) {
           logMessage('Speech heard, but annyang is paused');
@@ -652,16 +652,16 @@ export default annyang;
  *   'say hello (to my little) friend': greeting
  * };
  *
- * const showFlickr = function(tag) {
+ * const showFlickr = tag => {
  *   const url = 'http://api.flickr.com/services/rest/?tags='+tag;
  *   $.getJSON(url);
  * }
  *
- * const calculateStats = function(month) {
+ * const calculateStats = month => {
  *   $('#stats').text('Statistics for '+month);
  * }
  *
- * const greeting = function() {
+ * const greeting = () => {
  *   $('#greeting').text('Hello!');
  * }
  * </script>
@@ -676,7 +676,7 @@ export default annyang;
  *
  * #### Examples:
  * ````javascript
- * const calculateFunction = function(month) { console.log(month); }
+ * const calculateFunction = month => { console.log(month); }
  * const commands = {
  *   // This example will accept any word as the "month"
  *   'calculate :month stats': calculateFunction,
