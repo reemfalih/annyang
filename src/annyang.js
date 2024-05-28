@@ -191,9 +191,8 @@ if (SpeechRecognition) {
    * @param {Object} [options] - Optional options.
    * @method start
    */
-  annyang.start = options => {
+  annyang.start = (options = {}) => {
     initIfNeeded();
-    options = options || {};
     if (options.paused !== undefined) {
       pauseListening = !!options.paused;
     } else {
@@ -300,12 +299,12 @@ if (SpeechRecognition) {
    */
   annyang.removeCommands = commandsToRemove => {
     if (commandsToRemove === undefined) {
-      commandsList = [];
+      commandsList.length = 0;
     } else {
-      commandsToRemove = Array.isArray(commandsToRemove) ? commandsToRemove : [commandsToRemove];
+      const commandsToRemoveArray = Array.isArray(commandsToRemove) ? commandsToRemove : [commandsToRemove];
       commandsList = commandsList.filter(command => {
-        for (let i = 0; i < commandsToRemove.length; i++) {
-          if (commandsToRemove[i] === command.originalPhrase) {
+        for (let i = 0; i < commandsToRemoveArray.length; i++) {
+          if (commandsToRemoveArray[i] === command.originalPhrase) {
             return false;
           }
         }
@@ -491,11 +490,7 @@ if (SpeechRecognition) {
       return;
     }
 
-    if (!Array.isArray(sentences)) {
-      sentences = [sentences];
-    }
-
-    parseResults(sentences);
+    parseResults(Array.isArray(sentences) ? sentences : [sentences]);
   };
 
   /**
@@ -549,6 +544,7 @@ if (SpeechRecognition) {
 
     recognition.onerror = event => {
       invokeCallbacks(callbacks.error, event);
+      /* eslint-disable-next-line default-case */
       switch (event.error) {
         case 'network':
           invokeCallbacks(callbacks.errorNetwork, event);
@@ -597,22 +593,21 @@ if (SpeechRecognition) {
         if (debugState) {
           logMessage('Speech heard, but annyang is paused');
         }
-        return false;
-      }
+      } else {
+        // Map the results to an array
+        const SpeechRecognitionResult = event.results[event.resultIndex];
+        const results = [];
+        for (let k = 0; k < SpeechRecognitionResult.length; k++) {
+          results[k] = SpeechRecognitionResult[k].transcript;
+        }
 
-      // Map the results to an array
-      const SpeechRecognitionResult = event.results[event.resultIndex];
-      const results = [];
-      for (let k = 0; k < SpeechRecognitionResult.length; k++) {
-        results[k] = SpeechRecognitionResult[k].transcript;
+        parseResults(results);
       }
-
-      parseResults(results);
     };
 
     // build commands list
     if (resetCommands) {
-      commandsList = [];
+      commandsList.length = 0;
     }
     if (commands.length) {
       annyang.addCommands(commands);
