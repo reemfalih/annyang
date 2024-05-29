@@ -26,7 +26,7 @@ const SpeechRecognition =
 
 // Check browser support
 if (SpeechRecognition) {
-  const commandsList = [];
+  let commandsList = [];
   let recognition;
   const callbacks = {
     start: [],
