@@ -67,8 +67,8 @@ if (SpeechRecognition) {
   };
 
   // This method receives an array of callbacks to iterate over, and invokes each of them
-  const invokeCallbacks = (callbacks, ...args) => {
-    callbacks.forEach(callback => {
+  const invokeCallbacks = (callbacksArr, ...args) => {
+    callbacksArr.forEach(callback => {
       callback.callback.apply(callback.context, args);
     });
   };
