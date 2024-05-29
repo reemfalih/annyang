@@ -99,23 +99,23 @@ if (SpeechRecognition) {
     }
   };
 
-  const parseResults = function (results) {
-    invokeCallbacks(callbacks.result, results);
+  const parseResults = function (recognitionResults) {
+    invokeCallbacks(callbacks.result, recognitionResults);
     let commandText;
-    // go over each of the 5 results and alternative results received (we have set maxAlternatives to 5 above)
-    for (let i = 0; i < results.length; i++) {
+    // go over each of the RecognitionResults received (maxAlternatives is set to 5)
+    for (let i = 0; i < recognitionResults.length; i += 1) {
       // the text recognized
-      commandText = results[i].trim();
+      commandText = recognitionResults[i].trim();
       if (debugState) {
         logMessage(`Speech recognized: %c${commandText}`, debugStyle);
       }
 
       // try and match the recognized text to one of the commands on the list
-      for (let j = 0, l = commandsList.length; j < l; j++) {
+      for (let j = 0, l = commandsList.length; j < l; j += 1) {
         const currentCommand = commandsList[j];
-        const result = currentCommand.command.exec(commandText);
-        if (result) {
-          const parameters = result.slice(1);
+        const matchedCommand = currentCommand.command.exec(commandText);
+        if (matchedCommand) {
+          const parameters = matchedCommand.slice(1);
           if (debugState) {
             logMessage(`command matched: %c${currentCommand.originalPhrase}`, debugStyle);
             if (parameters.length) {
@@ -124,12 +124,12 @@ if (SpeechRecognition) {
           }
           // execute the matched command
           currentCommand.callback.apply(this, parameters);
-          invokeCallbacks(callbacks.resultMatch, commandText, currentCommand.originalPhrase, results);
+          invokeCallbacks(callbacks.resultMatch, commandText, currentCommand.originalPhrase, recognitionResults);
           return;
         }
       }
     }
-    invokeCallbacks(callbacks.resultNoMatch, results);
+    invokeCallbacks(callbacks.resultNoMatch, recognitionResults);
   };
 
   /**
