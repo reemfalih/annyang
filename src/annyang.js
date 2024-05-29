@@ -297,14 +297,7 @@ if (SpeechRecognition) {
       commandsList.length = 0;
     } else {
       const commandsToRemoveArray = Array.isArray(commandsToRemove) ? commandsToRemove : [commandsToRemove];
-      commandsList = commandsList.filter(command => {
-        for (let i = 0; i < commandsToRemoveArray.length; i++) {
-          if (commandsToRemoveArray[i] === command.originalPhrase) {
-            return false;
-          }
-        }
-        return true;
-      });
+      commandsList = commandsList.filter(command => !commandsToRemoveArray.includes(command.originalPhrase));
     }
   };
 
