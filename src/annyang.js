@@ -16,7 +16,7 @@
 
 const annyang = {};
 
-// Get the SpeechRecognition object, while handling browser prefixes
+// Get the SpeechRecognition object, accounting for possible browser prefixes
 const SpeechRecognition =
   window.SpeechRecognition ||
   window.webkitSpeechRecognition ||
@@ -24,7 +24,7 @@ const SpeechRecognition =
   window.msSpeechRecognition ||
   window.oSpeechRecognition;
 
-// Check browser support
+// Check if SpeechRecognition is supported by the browser. Skip adding anything to annyang besides `isSpeechRecognitionSupported` if it isn't
 if (SpeechRecognition) {
   let commandsList = [];
   let recognition;
@@ -66,7 +66,7 @@ if (SpeechRecognition) {
     return new RegExp(`^${parsedCommand}$`, 'i');
   };
 
-  // This method receives an array of callbacks to iterate over, and invokes each of them
+  // This method receives an array of callbacks and invokes each of them
   const invokeCallbacks = (callbacksArr, ...args) => {
     callbacksArr.forEach(callback => {
       callback.callback.apply(callback.context, args);
@@ -77,7 +77,7 @@ if (SpeechRecognition) {
     return recognition !== undefined;
   };
 
-  // method for logging in developer console when debug mode is on
+  // Method for logging to the console when debug mode is on
   const logMessage = (text, extraParameters) => {
     if (text.indexOf('%c') === -1 && !extraParameters) {
       console.log(text);
@@ -173,7 +173,7 @@ if (SpeechRecognition) {
    * Receives an optional options object which supports the following options:
    *
    * - `autoRestart`  (boolean) Should annyang restart itself if it is closed indirectly, because of silence or window conflicts?
-   * - `continuous`   (boolean) Allow forcing continuous mode on or off. Annyang is pretty smart about this, so only set this if you know what you're doing.
+   * - `continuous`   (boolean) Allow forcing continuous mode on or off. annyang is pretty smart about this, so only set this if you know what you're doing.
    * - `paused`       (boolean) Start annyang in paused mode.
    *
    * #### Examples:
@@ -211,7 +211,7 @@ if (SpeechRecognition) {
   };
 
   /**
-   * Stop listening, and turn off mic.
+   * Stop listening and turn off the mic.
    *
    * Alternatively, to only temporarily pause annyang responding to commands without stopping the SpeechRecognition engine or closing the mic, use pause() instead.
    * @see [pause()](#pause)
@@ -408,7 +408,7 @@ if (SpeechRecognition) {
     const compareWithCallbackParameter = cb => {
       return cb.callback !== callback;
     };
-    // Go over each callback type in callbacks store object
+    // Iterate over each callback type in the callbacks object
     Object.keys(callbacks).forEach(callbackType => {
       // if this is the type user asked to delete, or he asked to delete all, go ahead.
       if (type === undefined || type === callbackType) {
@@ -609,20 +609,20 @@ export default annyang;
  *
  * annyang understands commands with `named variables`, `splats`, and `optional words`.
  *
- * * Use `named variables` for one-word arguments in your command.
- * * Use `splats` to capture multi-word text at the end of your command (greedy).
- * * Use `optional words` or phrases to define a part of the command as optional.
+ * - Use `named variables` for one-word arguments in your command.
+ * - Use `splats` to capture multi-word text at the end of your command (greedy).
+ * - Use `optional words` or phrases to define a part of the command as optional.
  *
  * #### Examples:
  * ````html
  * <script>
  * const commands = {
  *   // annyang will capture anything after a splat (*) and pass it to the function.
- *   // e.g. saying "Show me Batman and Robin" will call showFlickr('Batman and Robin');
+ *   // For example saying "Show me Batman and Robin" will call showFlickr('Batman and Robin');
  *   'show me *tag': showFlickr,
  *
  *   // A named variable is a one-word variable, that can fit anywhere in your command.
- *   // e.g. saying "calculate October stats" will call calculateStats('October');
+ *   // For example saying "calculate October stats" will call calculateStats('October');
  *   'calculate :month stats': calculateStats,
  *
  *   // By defining a part of the following command as optional, annyang will respond
