@@ -579,16 +579,13 @@ if (SpeechRecognition) {
         if (debugState) {
           logMessage('Speech heard, but annyang is paused');
         }
-      } else {
-        // Map the results to an array
-        const SpeechRecognitionResult = event.results[event.resultIndex];
-        const results = [];
-        for (let k = 0; k < SpeechRecognitionResult.length; k++) {
-          results[k] = SpeechRecognitionResult[k].transcript;
-        }
-
-        parseResults(results);
+        return;
       }
+
+      // Map the results to an array
+      const SpeechRecognitionResults = event.results[event.resultIndex];
+      const results = Array.from(SpeechRecognitionResults, result => result.transcript);
+      parseResults(results);
     };
 
     // build commands list
