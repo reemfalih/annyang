@@ -21,7 +21,7 @@ It's as easy as adding [one javascript file](//cdnjs.cloudflare.com/ajax/libs/an
 ````html
 <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.1/annyang.min.js"></script>
 <script>
-if (annyang) {
+if (annyang.isSpeechRecognitionSupported()) {
   // Let's define a command.
   const commands = {
     'hello': () => { alert('Hello world!'); }
@@ -52,7 +52,7 @@ Speech KITT is fully customizable and comes with many different themes, and inst
 <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.1/annyang.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/SpeechKITT/0.3.0/speechkitt.min.js"></script>
 <script>
-if (annyang) {
+if (annyang.isSpeechRecognitionSupported()) {
   // Add our commands to annyang
   annyang.addCommands({
     'hello': function() { alert('Hello world!'); }

@@ -14,7 +14,9 @@
  * # API Reference
  */
 
-const annyang = {};
+const annyang = {
+  isSpeechRecognitionSupported: () => !!SpeechRecognition,
+};
 
 // Get the SpeechRecognition object, accounting for possible browser prefixes
 const SpeechRecognition =
