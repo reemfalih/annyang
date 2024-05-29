@@ -152,23 +152,20 @@ if (SpeechRecognition) {
   annyang.addCommands = commands => {
     initIfNeeded();
 
-    for (const phrase in commands) {
-      if (commands.hasOwnProperty(phrase)) {
-        const cb = window[commands[phrase]] || commands[phrase];
-        if (typeof cb === 'function') {
-          // convert command to regex then register the command
-          registerCommand(commandToRegExp(phrase), cb, phrase);
-        } else if (typeof cb === 'object' && cb.regexp instanceof RegExp) {
-          // register the command
-          registerCommand(new RegExp(cb.regexp.source, 'i'), cb.callback, phrase);
-        } else {
-          if (debugState) {
-            logMessage(`Can not register command: %c${phrase}`, debugStyle);
-          }
-          continue;
+    Object.keys(commands).forEach(phrase => {
+      const cb = window[commands[phrase]] || commands[phrase];
+      if (typeof cb === 'function') {
+        // convert command to regex then register the command
+        registerCommand(commandToRegExp(phrase), cb, phrase);
+      } else if (typeof cb === 'object' && cb.regexp instanceof RegExp) {
+        // register the command
+        registerCommand(new RegExp(cb.regexp.source, 'i'), cb.callback, phrase);
+      } else {
+        if (debugState) {
+          logMessage(`Can not register command: %c${phrase}`, debugStyle);
         }
       }
-    }
+    });
   };
 
   /**
@@ -421,20 +418,18 @@ if (SpeechRecognition) {
       return cb.callback !== callback;
     };
     // Go over each callback type in callbacks store object
-    for (const callbackType in callbacks) {
-      if (callbacks.hasOwnProperty(callbackType)) {
-        // if this is the type user asked to delete, or he asked to delete all, go ahead.
-        if (type === undefined || type === callbackType) {
-          // If user asked to delete all callbacks in this type or all types
-          if (callback === undefined) {
-            callbacks[callbackType] = [];
-          } else {
-            // Remove all matching callbacks
-            callbacks[callbackType] = callbacks[callbackType].filter(compareWithCallbackParameter);
-          }
+    Object.keys(callbacks).forEach(callbackType => {
+      // if this is the type user asked to delete, or he asked to delete all, go ahead.
+      if (type === undefined || type === callbackType) {
+        // If user asked to delete all callbacks in this type or all types
+        if (callback === undefined) {
+          callbacks[callbackType] = [];
+        } else {
+          // Remove all matching callbacks
+          callbacks[callbackType] = callbacks[callbackType].filter(compareWithCallbackParameter);
         }
       }
-    }
+    });
   };
 
   /**
