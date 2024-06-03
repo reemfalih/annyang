@@ -2,11 +2,11 @@
   "name": "annyang",
   "version": "3.0.0-dev",
   "description": "A javascript library for adding voice commands to your site, using speech recognition",
-  "main": "dist/annyang.cjs",
+  "main": "dist/annyang.cjs.js",
   "exports": {
     ".": {
-      "import": "./dist/annyang.mjs",
-      "require": "./dist/annyang.cjs",
+      "import": "./dist/annyang.mjs.js",
+      "require": "./dist/annyang.cjs.js",
       "default": "./dist/annyang.js"
     }
   },
