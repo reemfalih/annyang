@@ -29,9 +29,16 @@
     }
   },
   "main": "dist/annyang.cjs.js",
+  "module": "dist/annyang.mjs.js",
+  "browser": "dist/annyang.js",
   "directories": {
     "doc": "docs"
   },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "build": "rollup -c",
     "serve": "rollup -c -w",
