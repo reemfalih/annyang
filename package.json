@@ -2,7 +2,25 @@
   "name": "annyang",
   "version": "3.0.0-dev",
   "description": "A javascript library for adding voice commands to your site, using speech recognition",
-  "main": "dist/annyang.cjs.js",
+  "keywords": [
+    "annyang",
+    "annyang.js",
+    "recognition",
+    "speech",
+    "speechrecognition",
+    "voice",
+    "webkitspeechrecognition"
+  ],
+  "homepage": "https://www.talater.com/annyang/",
+  "bugs": {
+    "url": "https://github.com/TalAter/annyang/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TalAter/annyang.git"
+  },
+  "license": "MIT",
+  "author": "Tal Ater <tal@talater.com> (https://www.talater.com/)",
   "exports": {
     ".": {
       "import": "./dist/annyang.mjs.js",
@@ -10,6 +28,7 @@
       "default": "./dist/annyang.js"
     }
   },
+  "main": "dist/annyang.cjs.js",
   "directories": {
     "doc": "docs"
   },
@@ -26,25 +45,6 @@
     "lint:watch": "chokidar 'src/**/*.js' -c 'npm run lint'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/TalAter/annyang.git"
-  },
-  "keywords": [
-    "annyang",
-    "annyang.js",
-    "recognition",
-    "speech",
-    "speechrecognition",
-    "voice",
-    "webkitspeechrecognition"
-  ],
-  "author": "Tal Ater <tal@talater.com> (https://www.talater.com/)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/TalAter/annyang/issues"
-  },
-  "homepage": "https://www.talater.com/annyang/",
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.4",
     "chokidar-cli": "^3.0.0",
