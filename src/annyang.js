@@ -1,9 +1,3 @@
-//! annyang
-//! version : 3.0.0-dev
-//! author  : Tal Ater @TalAter
-//! license : MIT
-//! https://www.TalAter.com/annyang/
-
 /**
  * # Quick Tutorial, Intro, and Demos
  *
