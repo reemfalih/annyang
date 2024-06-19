@@ -1,13 +1,11 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi, test } from 'vitest';
+import { beforeAll, expect, test } from 'vitest';
 
 import { SpeechRecognition } from 'corti';
 
-beforeAll(() => {
-  vi.stubGlobal('SpeechRecognition', SpeechRecognition);
-});
+let annyang;
 
-afterAll(() => {
-  vi.unstubAllGlobals();
+beforeAll(async () => {
+  annyang = (await import('../../dist/annyang.mjs')).default;
 });
 
 test('SpeechRecognition is mocked', () => {
