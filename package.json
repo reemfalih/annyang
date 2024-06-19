@@ -40,12 +40,12 @@
     "build:watch": "rollup -c -w",
     "dev": "npm-run-all --parallel lint:watch format:watch build:watch",
     "docs": "documentation build src/annyang.js -f md -o docs/README.md",
-    "format": "prettier --write 'src/**/*.js' 'package.json' '.eslintrc.json' 'rollup.config.mjs'",
-    "format:watch": "chokidar 'src/**/*.js' '*.mjs' '*.json' -c 'npm run format'",
+    "format": "prettier --write 'src/**/*.js' 'test/**/*.test.js' 'package.json' '.eslintrc.json' 'rollup.config.mjs'",
+    "format:watch": "chokidar 'src/**/*.js' 'test/**/*.test.js' '*.mjs' '*.json' -c 'npm run format'",
     "lint": "npm-run-all -c lint:src lint:docs",
     "lint:docs": "documentation lint src/annyang.js",
-    "lint:src": "eslint 'src/**/*.js' 'rollup.config.mjs'",
-    "lint:watch": "chokidar 'src/**/*.js' '*.mjs' -c 'npm run lint'",
+    "lint:src": "eslint 'src/**/*.js' 'test/**/*.test.js' 'rollup.config.mjs'",
+    "lint:watch": "chokidar 'src/**/*.js' 'test/**/*.js' '*.mjs' -c 'npm run lint'",
     "test": "vitest"
   },
   "devDependencies": {
