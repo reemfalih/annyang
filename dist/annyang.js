@@ -16,17 +16,17 @@ var annyang = (function () {
    * # API Reference
    */
 
+  // Get the SpeechRecognition object, accounting for possible browser prefixes
+  const SpeechRecognition =
+    globalThis.SpeechRecognition ||
+    globalThis.webkitSpeechRecognition ||
+    globalThis.mozSpeechRecognition ||
+    globalThis.msSpeechRecognition ||
+    globalThis.oSpeechRecognition;
+
   const annyang = {
     isSpeechRecognitionSupported: () => !!SpeechRecognition,
   };
-
-  // Get the SpeechRecognition object, accounting for possible browser prefixes
-  const SpeechRecognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition ||
-    window.mozSpeechRecognition ||
-    window.msSpeechRecognition ||
-    window.oSpeechRecognition;
 
   // Check if SpeechRecognition is supported by the browser. Skip adding anything to annyang besides `isSpeechRecognitionSupported` if it isn't
   if (SpeechRecognition) {
@@ -518,7 +518,7 @@ var annyang = (function () {
 
       // In HTTPS, turn off continuous mode for faster results.
       // In HTTP,  turn on  continuous mode for much slower results, but no repeating security notices
-      recognition.continuous = window.location.protocol === 'http:';
+      recognition.continuous = globalThis.location.protocol === 'http:';
 
       // Sets the language to the default 'en-US'. This can be changed with annyang.setLanguage()
       recognition.lang = 'en-US';
