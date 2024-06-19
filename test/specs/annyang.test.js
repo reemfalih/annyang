@@ -1,6 +1,6 @@
 import { beforeAll, expect, test } from 'vitest';
 
-import { SpeechRecognition } from 'corti';
+import { SpeechRecognition as MockSpeechRecognition } from 'corti';
 
 let annyang;
 
@@ -10,5 +10,5 @@ beforeAll(async () => {
 
 test('SpeechRecognition is mocked', () => {
   expect(globalThis.SpeechRecognition).toBeDefined();
-  expect(new globalThis.SpeechRecognition()).toBeInstanceOf(SpeechRecognition);
+  expect(new globalThis.SpeechRecognition()).toBeInstanceOf(MockSpeechRecognition);
 });
