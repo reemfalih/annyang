@@ -18,6 +18,9 @@ describe('annyang', () => {
     it('should be a function', () => {
       expect(annyang.isSpeechRecognitionSupported).toBeInstanceOf(Function);
     });
+    it('should return true when SpeechRecognition is available in globalThis', () => {
+      expect(annyang.isSpeechRecognitionSupported()).toBe(true);
+    });
   });
 
   describe('init', () => {
