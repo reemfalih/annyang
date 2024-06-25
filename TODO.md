@@ -8,6 +8,7 @@
 - [ ] Fix dev command to not run two chokidars
 - [ ] Use Docker to test in various versions
 - [ ] Update package.json with the minimal node engine version needed
+- [ ] Upgrade to ESLint 9
 
 ### Change log
 
