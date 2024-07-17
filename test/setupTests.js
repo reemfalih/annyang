@@ -3,6 +3,7 @@ import { SpeechRecognition } from 'corti';
 
 beforeAll(() => {
   vi.stubGlobal('SpeechRecognition', SpeechRecognition);
+  vi.stubGlobal('location', { protocol: 'https:' });
 });
 
 afterAll(() => {
