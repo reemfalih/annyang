@@ -433,7 +433,7 @@ const resume = () => {
  */
 const addCallback = (type, callback, context = undefined) => {
   if (typeof callback === 'function' && callbacks[type] !== undefined) {
-    callbacks[type].push({ callback: callback, context });
+    callbacks[type].push({ callback, context });
   }
 };
 
