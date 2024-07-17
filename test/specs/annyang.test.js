@@ -120,7 +120,6 @@ describe('annyang', () => {
 
       beforeEach(() => {
         spyOnMatch = vi.fn();
-        annyang.removeCommands();
       });
 
       it('should work when a command object with a single simple command is passed', () => {
@@ -146,7 +145,6 @@ describe('annyang', () => {
       spyOnMatch3 = vi.fn();
       spyOnMatch4 = vi.fn();
       spyOnMatch5 = vi.fn();
-      annyang.removeCommands();
       annyang.addCommands({
         'Time for some (thrilling) heroics': spyOnMatch1,
         'We should start dealing in those *merchandise': spyOnMatch2,
@@ -297,7 +295,6 @@ describe('annyang', () => {
     let spyOnStart2;
 
     beforeEach(() => {
-      annyang.abort();
       spyOnStart1 = vi.fn();
       spyOnStart2 = vi.fn();
     });
