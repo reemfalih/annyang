@@ -32,7 +32,7 @@ describe('annyang', () => {
     annyang.debug(false);
     annyang.abort();
     annyang.removeCommands();
-    // annyang.removeCallback();
+    annyang.removeCallback();
   });
 
   describe('isSpeechRecognitionSupported', () => {
@@ -269,6 +269,80 @@ describe('annyang', () => {
       expect(spyOnMatch3).toHaveBeenCalledTimes(1);
       expect(spyOnMatch4).not.toHaveBeenCalled();
       expect(spyOnMatch5).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('removeCallback', () => {
+    let spy1;
+    let spy2;
+    let spy3;
+    let spy4;
+
+    beforeEach(() => {
+      spy1 = vi.fn();
+      spy2 = vi.fn();
+      spy3 = vi.fn();
+      spy4 = vi.fn();
+      annyang.addCallback('start', spy1);
+      annyang.addCallback('start', spy2);
+      annyang.addCallback('end', spy3);
+      annyang.addCallback('end', spy4);
+    });
+
+    it('should be a function', () => {
+      expect(annyang.removeCallback).toBeInstanceOf(Function);
+    });
+
+    it('should always return undefined', () => {
+      expect(annyang.removeCallback()).toEqual(undefined);
+      expect(annyang.removeCallback('blergh')).toEqual(undefined);
+      expect(annyang.removeCallback('start')).toEqual(undefined);
+      expect(annyang.removeCallback('start', () => {})).toEqual(undefined);
+    });
+
+    it('should delete all callbacks on all event types if passed undefined in both parameters', () => {
+      annyang.removeCallback();
+      annyang.start();
+      annyang.abort();
+
+      expect(spy1).not.toHaveBeenCalled();
+      expect(spy2).not.toHaveBeenCalled();
+      expect(spy3).not.toHaveBeenCalled();
+      expect(spy4).not.toHaveBeenCalled();
+    });
+
+    it('should delete all callbacks of certain fuction on all event types if first parameter is undefined and second parameter is that function', () => {
+      annyang.addCallback('end', spy1);
+      annyang.removeCallback(undefined, spy1);
+      annyang.start();
+      annyang.abort();
+
+      expect(spy1).not.toHaveBeenCalled();
+      expect(spy2).toHaveBeenCalledTimes(1);
+      expect(spy3).toHaveBeenCalledTimes(1);
+      expect(spy4).toHaveBeenCalledTimes(1);
+    });
+
+    it('should delete all callbacks on an event type if passed an event name and no second parameter', () => {
+      annyang.removeCallback('start');
+      annyang.start();
+      annyang.abort();
+
+      expect(spy1).not.toHaveBeenCalled();
+      expect(spy2).not.toHaveBeenCalled();
+      expect(spy3).toHaveBeenCalledTimes(1);
+      expect(spy4).toHaveBeenCalledTimes(1);
+    });
+
+    it('should delete the callbacks on an event type matching the function passed as the second parameter', () => {
+      annyang.removeCallback('start', spy2);
+      annyang.start();
+      annyang.abort();
+
+      expect(spy1).toHaveBeenCalledTimes(1);
+      expect(spy2).not.toHaveBeenCalled();
+      expect(spy3).toHaveBeenCalledTimes(1);
+      expect(spy4).toHaveBeenCalledTimes(1);
     });
   });
 
