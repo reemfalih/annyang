@@ -57,64 +57,6 @@ describe('annyang', () => {
       }).not.toThrowError();
     });
 
-    it('should write to console each command that was successfully added when debug is on', () => {
-      expect(logSpy).toHaveBeenCalledTimes(0);
-      annyang.debug(true);
-
-      annyang.addCommands({
-        'Time for some thrilling heroics': () => {},
-      });
-
-      expect(console.log).toHaveBeenCalledTimes(1);
-      expect(console.log).toHaveBeenCalledWith(
-        'Command successfully loaded: %cTime for some thrilling heroics',
-        'font-weight: bold; color: #00f;'
-      );
-
-      annyang.addCommands({
-        'That sounds like something out of science fiction': () => {},
-        'We should start dealing in those black-market beagles': () => {},
-      });
-
-      expect(console.log).toHaveBeenCalledTimes(3);
-    });
-
-    it('should not write to console commands added when debug is off', () => {
-      annyang.debug(false);
-      annyang.addCommands({
-        'Time for some thrilling heroics': () => {},
-      });
-      annyang.addCommands({
-        'That sounds like something out of science fiction': () => {},
-        'We should start dealing in those black-market beagles': () => {},
-      });
-
-      expect(console.log).not.toHaveBeenCalled();
-    });
-
-    it('should write to console when commands could not be added and debug is on', () => {
-      annyang.debug(true);
-      expect(console.log).not.toHaveBeenCalled();
-
-      annyang.addCommands({
-        'Time for some thrilling heroics': 'not_a_function',
-      });
-
-      expect(console.log).toHaveBeenCalledTimes(1);
-      expect(console.log).toHaveBeenCalledWith(
-        'Can not register command: %cTime for some thrilling heroics',
-        'font-weight: bold; color: #00f;'
-      );
-    });
-
-    it('should not write to console when commands could not be added but debug is off', () => {
-      annyang.debug(false);
-      annyang.addCommands({
-        'Time for some thrilling heroics': 'not_a_function',
-      });
-      expect(console.log).not.toHaveBeenCalled();
-    });
-
     describe('command matching', () => {
       let spyOnMatch;
 
@@ -127,6 +69,66 @@ describe('annyang', () => {
         annyang.start();
         annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
         expect(spyOnMatch).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe('debug', () => {
+      it('should write to console each command that was successfully added when debug is on', () => {
+        expect(logSpy).toHaveBeenCalledTimes(0);
+        annyang.debug(true);
+
+        annyang.addCommands({
+          'Time for some thrilling heroics': () => {},
+        });
+
+        expect(console.log).toHaveBeenCalledTimes(1);
+        expect(console.log).toHaveBeenCalledWith(
+          'Command successfully loaded: %cTime for some thrilling heroics',
+          'font-weight: bold; color: #00f;'
+        );
+
+        annyang.addCommands({
+          'That sounds like something out of science fiction': () => {},
+          'We should start dealing in those black-market beagles': () => {},
+        });
+
+        expect(console.log).toHaveBeenCalledTimes(3);
+      });
+
+      it('should not write to console commands added when debug is off', () => {
+        annyang.debug(false);
+        annyang.addCommands({
+          'Time for some thrilling heroics': () => {},
+        });
+        annyang.addCommands({
+          'That sounds like something out of science fiction': () => {},
+          'We should start dealing in those black-market beagles': () => {},
+        });
+
+        expect(console.log).not.toHaveBeenCalled();
+      });
+
+      it('should write to console when commands could not be added and debug is on', () => {
+        annyang.debug(true);
+        expect(console.log).not.toHaveBeenCalled();
+
+        annyang.addCommands({
+          'Time for some thrilling heroics': 'not_a_function',
+        });
+
+        expect(console.log).toHaveBeenCalledTimes(1);
+        expect(console.log).toHaveBeenCalledWith(
+          'Can not register command: %cTime for some thrilling heroics',
+          'font-weight: bold; color: #00f;'
+        );
+      });
+
+      it('should not write to console when commands could not be added but debug is off', () => {
+        annyang.debug(false);
+        annyang.addCommands({
+          'Time for some thrilling heroics': 'not_a_function',
+        });
+        expect(console.log).not.toHaveBeenCalled();
       });
     });
   });
