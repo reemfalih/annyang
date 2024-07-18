@@ -49,6 +49,27 @@ describe('annyang', () => {
     });
   });
 
+  describe('debug', () => {
+    it('should be a function', () => {
+      expect(annyang.isSpeechRecognitionSupported).toBeInstanceOf(Function);
+    });
+    it('should turn on debug messages when called without a parameter', () => {
+      annyang.debug();
+      annyang.addCommands({ 'test command': () => {} });
+      expect(console.log).toHaveBeenCalled();
+    });
+    it('should turn on debug messages when called with a truthy parameter', () => {
+      annyang.debug(11);
+      annyang.addCommands({ 'test command': () => {} });
+      expect(console.log).toHaveBeenCalled();
+    });
+    it('should turn off debug messages when called with a falsy parameter', () => {
+      annyang.debug(0);
+      annyang.addCommands({ 'test command': () => {} });
+      expect(console.log).not.toHaveBeenCalled();
+    });
+  });
+
   describe('addCommands', () => {
     it('should be a function', () => {
       expect(annyang.addCommands).toBeInstanceOf(Function);
@@ -318,7 +339,7 @@ describe('annyang', () => {
       expect(spy4).not.toHaveBeenCalled();
     });
 
-    it('should delete all callbacks of certain fuction on all event types if first parameter is undefined and second parameter is that function', () => {
+    it('should delete all callbacks of given function on all event types if 1st parameter is undefined and second parameter is a function', () => {
       annyang.addCallback('end', spy1);
       annyang.removeCallback(undefined, spy1);
       annyang.start();
