@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, test, vi } from 'vitest';
 
 import { SpeechRecognition as MockSpeechRecognition } from 'corti';
 
@@ -28,11 +28,16 @@ describe('annyang', () => {
   let logSpy;
 
   beforeEach(() => {
+    vi.useFakeTimers();
     logSpy = vi.spyOn(console, 'log');
     annyang.debug(false);
     annyang.abort();
     annyang.removeCommands();
     annyang.removeCallback();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   describe('isSpeechRecognitionSupported', () => {
@@ -367,12 +372,16 @@ describe('annyang', () => {
   });
 
   describe('start', () => {
+    let recognition;
     let spyOnStart1;
     let spyOnStart2;
 
     beforeEach(() => {
+      recognition = annyang.getSpeechRecognizer();
       spyOnStart1 = vi.fn();
       spyOnStart2 = vi.fn();
+      recognition.addEventListener('start', spyOnStart1);
+      annyang.addCallback('start', spyOnStart2);
     });
 
     it('should be a function', () => {
@@ -380,9 +389,6 @@ describe('annyang', () => {
     });
 
     it('should start annyang and SpeechRecognition if it was aborted', () => {
-      const recognition = annyang.getSpeechRecognizer();
-      recognition.addEventListener('start', spyOnStart1);
-      annyang.addCallback('start', spyOnStart2);
       expect(spyOnStart1).not.toHaveBeenCalled();
       expect(spyOnStart2).not.toHaveBeenCalled();
       expect(annyang.isListening()).toBe(false);
@@ -390,6 +396,148 @@ describe('annyang', () => {
       expect(annyang.isListening()).toBe(true);
       expect(spyOnStart1).toHaveBeenCalledTimes(1);
       expect(spyOnStart2).toHaveBeenCalledTimes(1);
+    });
+
+    it('should resume annyang if it was paused', () => {
+      annyang.start();
+      expect(annyang.isListening()).toBe(true);
+
+      annyang.pause();
+      expect(annyang.isListening()).toBe(false);
+
+      annyang.start();
+      expect(annyang.isListening()).toBe(true);
+    });
+
+    it('should resume annyang if it was paused but not trigger start event', () => {
+      expect(spyOnStart1).not.toHaveBeenCalled();
+      expect(spyOnStart2).not.toHaveBeenCalled();
+
+      annyang.start();
+      expect(annyang.isListening()).toBe(true);
+      expect(spyOnStart1).toHaveBeenCalledTimes(1);
+      expect(spyOnStart2).toHaveBeenCalledTimes(1);
+
+      annyang.pause();
+      expect(annyang.isListening()).toBe(false);
+
+      annyang.start();
+      expect(annyang.isListening()).toBe(true);
+
+      expect(spyOnStart1).toHaveBeenCalledTimes(1);
+      expect(spyOnStart2).toHaveBeenCalledTimes(1);
+    });
+
+    it('should do nothing when annyang is already started and listening', () => {
+      annyang.start();
+      expect(annyang.isListening()).toBe(true);
+
+      expect(() => {
+        annyang.start();
+      }).not.toThrowError();
+
+      expect(annyang.isListening()).toBe(true);
+
+      expect(spyOnStart1).toHaveBeenCalledTimes(1);
+      expect(spyOnStart2).toHaveBeenCalledTimes(1);
+    });
+
+    it('should accept an options object as its first argument', () => {
+      expect(() => {
+        annyang.start({ option: true });
+      }).not.toThrowError();
+    });
+
+    describe('options', () => {
+      describe('autoRestart', () => {
+        it('should cause annyang to restart after 1 second when Speech Recognition engine was aborted (when true)', () => {
+          annyang.start({ autoRestart: true });
+          recognition.abort();
+          expect(annyang.isListening()).toBe(false);
+          vi.advanceTimersByTime(999);
+          expect(annyang.isListening()).toBe(false);
+          vi.advanceTimersByTime(1);
+          expect(annyang.isListening()).toBe(true);
+        });
+
+        it('should cause annyang to not restart when Speech Recognition engine was aborted (when false)', () => {
+          annyang.start({ autoRestart: false });
+          recognition.abort();
+          expect(annyang.isListening()).toBe(false);
+          vi.advanceTimersByTime(10000);
+          expect(annyang.isListening()).toBe(false);
+        });
+      });
+
+      describe('paused', () => {
+        it('should cause annyang to start paused (when true)', () => {
+          annyang.start({ paused: true });
+          expect(annyang.isListening()).toBe(false);
+        });
+        it('should cause annyang to start not paused (when false)', () => {
+          annyang.start({ paused: false });
+          expect(annyang.isListening()).toBe(true);
+        });
+      });
+
+      describe('continuous', () => {
+        let spyOnEnd;
+        let spyOnResult;
+
+        beforeEach(() => {
+          spyOnEnd = vi.fn();
+          spyOnResult = vi.fn();
+          annyang.addCallback('end', spyOnEnd);
+          annyang.addCallback('result', spyOnResult);
+        });
+
+        it('should cause annyang to continuously listen to phrases even after matches are made (when true)', () => {
+          annyang.start({ continuous: true });
+          expect(spyOnResult).not.toHaveBeenCalled();
+          expect(spyOnEnd).not.toHaveBeenCalled();
+          recognition.say('Time for some thrilling heroics');
+          expect(spyOnResult).toHaveBeenCalledTimes(1);
+          expect(spyOnEnd).not.toHaveBeenCalled();
+          recognition.say('Time for some thrilling heroics');
+          expect(spyOnResult).toHaveBeenCalledTimes(2);
+          expect(spyOnEnd).not.toHaveBeenCalled();
+        });
+
+        it('should cause annyang to stop after the first recognized phrase whether it matches or not (when false)', () => {
+          annyang.start({ continuous: false });
+          expect(spyOnResult).not.toHaveBeenCalled();
+          expect(spyOnEnd).not.toHaveBeenCalled();
+          recognition.say('Time for some thrilling heroics');
+          expect(spyOnResult).toHaveBeenCalledTimes(1);
+          expect(spyOnEnd).toHaveBeenCalledTimes(1);
+          recognition.say('Time for some thrilling heroics');
+          expect(spyOnResult).toHaveBeenCalledTimes(1);
+          expect(spyOnEnd).toHaveBeenCalledTimes(1);
+        });
+      });
+    });
+
+    describe('deubg', () => {
+      it('should write a message to log when annyang is already started and debug is on', () => {
+        expect(logSpy).toHaveBeenCalledTimes(0);
+        annyang.debug(true);
+        annyang.start();
+        annyang.start();
+
+        expect(console.log).toHaveBeenCalledTimes(1);
+        expect(console.log).toHaveBeenCalledWith(
+          "Failed to execute 'start' on 'SpeechRecognition': recognition has already started."
+        );
+      });
+
+      it('should not write a message to log when annyang is already started but debug is off', () => {
+        expect(logSpy).toHaveBeenCalledTimes(0);
+        annyang.debug(false);
+        annyang.start();
+        annyang.start();
+
+        expect(console.log).not.toHaveBeenCalled();
+      });
     });
   });
 
