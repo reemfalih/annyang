@@ -300,6 +300,98 @@ describe('annyang', () => {
     });
   });
 
+  describe('addCallback', () => {
+    it('should be a function', () => {
+      expect(annyang.addCallback).toBeInstanceOf(Function);
+    });
+
+    it('should always return undefined', () => {
+      expect(annyang.addCallback()).toEqual(undefined);
+      expect(annyang.addCallback('blergh')).toEqual(undefined);
+      expect(annyang.addCallback('start')).toEqual(undefined);
+      expect(annyang.addCallback('start', () => {})).toEqual(undefined);
+      expect(annyang.addCallback('start', () => {}, this)).toEqual(undefined);
+    });
+
+    it('should be able to register multiple callbacks to one event type', () => {
+      const spy1 = vi.fn();
+      const spy2 = vi.fn();
+
+      annyang.addCallback('start', spy1);
+      annyang.addCallback('start', spy2);
+
+      expect(spy1).not.toHaveBeenCalled();
+      expect(spy2).not.toHaveBeenCalled();
+
+      annyang.start();
+
+      expect(spy1).toHaveBeenCalledTimes(1);
+      expect(spy2).toHaveBeenCalledTimes(1);
+    });
+
+    it('should run callbacks with `this` being undefined by default', () => {
+      const spy1 = vi.fn();
+      const fn = function () {
+        spy1(this);
+      };
+      annyang.addCallback('start', fn);
+
+      annyang.start();
+      expect(spy1).toHaveBeenCalledWith(undefined);
+    });
+
+    it('should run callbacks in the scope where addCallback was called by default', () => {
+      let counter = 0;
+      const fn = function () {
+        counter += 1;
+      };
+      annyang.addCallback('start', fn);
+
+      annyang.start();
+      expect(counter).toEqual(1);
+    });
+
+    it('should run arrow function callbacks with `this` being the current scope in which addCallback was called', () => {
+      const spy1 = vi.fn();
+      const fn = () => {
+        spy1(this);
+      };
+      annyang.addCallback('start', fn);
+
+      annyang.start();
+      expect(spy1).toHaveBeenCalledWith(this);
+    });
+
+    it('should run callbacks with `this` being equal to the context given as the third parameter', () => {
+      const spy1 = vi.fn();
+      const obj = { counter: 0 };
+
+      const fn = function () {
+        spy1(this);
+        this.counter += 1;
+      };
+
+      annyang.addCallback('start', fn, obj);
+      annyang.start();
+
+      expect(spy1).toHaveBeenCalledWith(obj);
+      expect(obj.counter).toEqual(1);
+    });
+
+    it('should run arrow function callbacks with `this` being equal to the current context regardless of the context given as the third parameter', () => {
+      const spy1 = vi.fn();
+
+      const fn = () => {
+        spy1(this);
+      };
+
+      annyang.addCallback('start', fn, { a: 1 });
+      annyang.start();
+
+      expect(spy1).toHaveBeenCalledWith(this);
+    });
+  });
+
   describe('removeCallback', () => {
     let spy1;
     let spy2;
