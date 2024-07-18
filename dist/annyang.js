@@ -302,7 +302,7 @@ var annyang = (function (exports) {
    *
    * Receives an optional options object which supports the following options:
    *
-   * - `autoRestart`  (aboolean) Should annyang restart itself if it is closed indirectly (e.g. because of silence or window conflicts)?
+   * - `autoRestart`  (boolean) Should annyang restart itself if it is closed indirectly (e.g. because of silence or window conflicts)?
    * - `continuous`   (boolean) Allow forcing continuous mode on or off. annyang is pretty smart about this, so only set this if you know what you're doing.
    * - `paused`       (boolean) Start annyang in paused mode.
    *
