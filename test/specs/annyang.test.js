@@ -711,18 +711,15 @@ describe('annyang', () => {
       expect(annyang.pause()).toEqual(undefined);
     });
 
-    it.skip('should cause commands not to fire even when a command phrase is matched', () => {
+    it('should cause commands not to fire even when a command phrase is matched', () => {
       const spyOnMatch = vi.fn();
       annyang.addCommands({
         'Time for some thrilling heroics': spyOnMatch,
       });
       annyang.start();
-      // delete the next 2 lines and uncomment the rest
+      annyang.pause();
       annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
-      expect(spyOnMatch).toHaveBeenCalledTimes(1);
-      // annyang.pause();
-      // annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
-      // expect(spyOnMatch).not.toHaveBeenCalled();
+      expect(spyOnMatch).not.toHaveBeenCalled();
     });
   });
 
