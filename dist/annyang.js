@@ -531,6 +531,37 @@ var annyang = (function (exports) {
   };
 
   /**
+   * Simulate speech being recognized. This will trigger the same events and behavior as when the Speech Recognition
+   * detects speech.
+   *
+   * Can accept either a string containing a single sentence or an array containing multiple sentences to be checked
+   * in order until one of them matches a command (similar to the way Speech Recognition Alternatives are parsed)
+   *
+   * #### Examples:
+   * ````javascript
+   * annyang.trigger('Time for some thrilling heroics');
+   * annyang.trigger(
+   *     ['Time for some thrilling heroics', 'Time for some thrilling aerobics']
+   *   );
+   * ````
+   *
+   * @param string|string[] sentences A sentence as a string or an array of strings of possible sentences
+   * @returns undefined
+   * @method trigger
+   */
+  const trigger = sentences => {
+    if (!isListening()) {
+      if (!listening) {
+        logMessage('Cannot trigger while annyang is aborted');
+      } else {
+        logMessage('Speech heard, but annyang is paused');
+      }
+      return;
+    }
+    parseResults(Array.isArray(sentences) ? sentences : [sentences]);
+  };
+
+  /**
    * Returns the instance of the browser's SpeechRecognition object used by annyang.
    * Useful in case you want direct access to the browser's Speech Recognition engine.
    *
@@ -619,6 +650,7 @@ var annyang = (function (exports) {
   exports.resume = resume;
   exports.setLanguage = setLanguage;
   exports.start = start;
+  exports.trigger = trigger;
 
   return exports;
 

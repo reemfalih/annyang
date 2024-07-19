@@ -900,6 +900,82 @@ describe('annyang', () => {
     });
   });
 
+  describe('trigger', () => {
+    let spyOnCommand, spyOnResult;
+
+    beforeEach(() => {
+      spyOnCommand = vi.fn();
+      spyOnResult = vi.fn();
+      annyang.addCommands({
+        'Time for some thrilling heroics': spyOnCommand,
+      });
+      annyang.start();
+    });
+
+    it('should always return undefined', () => {
+      expect(annyang.trigger()).toEqual(undefined);
+      expect(annyang.trigger('Time for some thrilling heroics')).toEqual(undefined);
+      expect(annyang.trigger(['Time for some thrilling aerobics', 'Time for some thrilling heroics'])).toEqual(
+        undefined
+      );
+    });
+
+    it('should match a sentence passed as a string and execute it as if it was passed from Speech Recognition', () => {
+      expect(spyOnCommand).not.toHaveBeenCalled();
+      annyang.trigger('Time for some thrilling heroics');
+      expect(spyOnCommand).toHaveBeenCalledTimes(1);
+    });
+
+    it('should match a sentence passed as part of an array and execute it as if it was passed from Speech Recognition', () => {
+      expect(spyOnCommand).not.toHaveBeenCalled();
+      annyang.trigger(['Time for some thrilling aerobics', 'Time for some thrilling heroics']);
+      expect(spyOnCommand).toHaveBeenCalledTimes(1);
+    });
+
+    it('should trigger a result event', () => {
+      annyang.addCallback('result', spyOnResult);
+
+      expect(spyOnResult).not.toHaveBeenCalled();
+      annyang.trigger('Result but not a match');
+
+      expect(spyOnResult).toHaveBeenCalledTimes(1);
+    });
+
+    it('should trigger a resultMatch event if sentence matches a command', () => {
+      annyang.addCallback('resultMatch', spyOnResult);
+
+      expect(spyOnResult).not.toHaveBeenCalled();
+      annyang.trigger('Time for some thrilling heroics');
+
+      expect(spyOnResult).toHaveBeenCalledTimes(1);
+    });
+
+    it('should trigger a resultNoMatch event if sentence does not match a command', () => {
+      annyang.addCallback('resultNoMatch', spyOnResult);
+
+      expect(spyOnResult).not.toHaveBeenCalled();
+      annyang.trigger('Result but not a match');
+
+      expect(spyOnResult).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not trigger a matching command if annyang is aborted or not started', () => {
+      annyang.addCallback('resultMatch', spyOnResult);
+      expect(spyOnResult).not.toHaveBeenCalled();
+      annyang.abort();
+      annyang.trigger('Time for some thrilling heroics');
+      expect(spyOnResult).not.toHaveBeenCalled();
+    });
+
+    it('should not trigger a matching command if annyang is paused', () => {
+      annyang.addCallback('resultMatch', spyOnResult);
+      expect(spyOnResult).not.toHaveBeenCalled();
+      annyang.pause();
+      annyang.trigger('Time for some thrilling heroics');
+      expect(spyOnResult).not.toHaveBeenCalled();
+    });
+  });
+
   describe('events', () => {
     describe('end', () => {
       let spyOnEnd;

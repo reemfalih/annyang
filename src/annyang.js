@@ -523,43 +523,6 @@ const debug = (newState = true) => {
 };
 
 /**
- * Returns the instance of the browser's SpeechRecognition object used by annyang.
- * Useful in case you want direct access to the browser's Speech Recognition engine.
- *
- * @returns SpeechRecognition The browser's Speech Recognizer instance currently used by annyang
- * @method getSpeechRecognizer
- */
-const getSpeechRecognizer = () => {
-  return recognition;
-};
-
-export {
-  isSpeechRecognitionSupported,
-  addCommands,
-  removeCommands,
-  start,
-  abort,
-  pause,
-  resume,
-  addCallback,
-  removeCallback,
-  isListening,
-  setLanguage,
-  debug,
-  getSpeechRecognizer,
-};
-
-// =============================================================================
-//
-//
-//
-//
-//
-//
-//
-// =============================================================================
-
-/**
  * Simulate speech being recognized. This will trigger the same events and behavior as when the Speech Recognition
  * detects speech.
  *
@@ -587,8 +550,35 @@ const trigger = sentences => {
     }
     return;
   }
-
   parseResults(Array.isArray(sentences) ? sentences : [sentences]);
+};
+
+/**
+ * Returns the instance of the browser's SpeechRecognition object used by annyang.
+ * Useful in case you want direct access to the browser's Speech Recognition engine.
+ *
+ * @returns SpeechRecognition The browser's Speech Recognizer instance currently used by annyang
+ * @method getSpeechRecognizer
+ */
+const getSpeechRecognizer = () => {
+  return recognition;
+};
+
+export {
+  isSpeechRecognitionSupported,
+  addCommands,
+  removeCommands,
+  start,
+  abort,
+  pause,
+  resume,
+  addCallback,
+  removeCallback,
+  isListening,
+  setLanguage,
+  trigger,
+  debug,
+  getSpeechRecognizer,
 };
 
 /**
