@@ -549,7 +549,7 @@ var annyang = (function (exports) {
    * @returns undefined
    * @method trigger
    */
-  const trigger = sentences => {
+  const trigger = (sentences = []) => {
     if (!isListening()) {
       if (!listening) {
         logMessage('Cannot trigger while annyang is aborted');
