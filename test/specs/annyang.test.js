@@ -703,6 +703,13 @@ describe('annyang', () => {
   });
 
   describe('pause', () => {
+    let recognition;
+
+    beforeEach(() => {
+      annyang.start();
+      recognition = annyang.getSpeechRecognizer();
+    });
+
     it('should be a function', () => {
       expect(annyang.pause).toBeInstanceOf(Function);
     });
@@ -716,10 +723,55 @@ describe('annyang', () => {
       annyang.addCommands({
         'Time for some thrilling heroics': spyOnMatch,
       });
-      annyang.start();
       annyang.pause();
-      annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
+      recognition.say('Time for some thrilling heroics');
       expect(spyOnMatch).not.toHaveBeenCalled();
+    });
+
+    it("should not stop the browser's Speech Recognition engine", () => {
+      expect(recognition.isStarted()).toBe(true);
+      annyang.pause();
+      expect(recognition.isStarted()).toBe(true);
+    });
+
+    it('should leave annyang paused if called after annyang.abort()', () => {
+      expect(annyang.isListening()).toBe(true);
+      annyang.abort();
+
+      expect(annyang.isListening()).toBe(false);
+      annyang.pause();
+
+      expect(annyang.isListening()).toBe(false);
+    });
+
+    it("should leave the browser's Speech Recognition off, if called after annyang.abort()", () => {
+      expect(recognition.isStarted()).toBe(true);
+      annyang.abort();
+
+      expect(recognition.isStarted()).toBe(false);
+      annyang.pause();
+
+      expect(recognition.isStarted()).toBe(false);
+    });
+
+    describe('debug', () => {
+      beforeEach(() => {
+        annyang.pause();
+      });
+
+      it('should log a message if speech detected while paused and debug is on', () => {
+        annyang.debug();
+        expect(console.log).not.toHaveBeenCalled();
+        recognition.say('Time for some thrilling heroics');
+        expect(console.log).toHaveBeenCalledTimes(1);
+        expect(console.log).toHaveBeenCalledWith('Speech heard, but annyang is paused');
+      });
+
+      it('should not log a message if speech detected while paused and debug is off', () => {
+        annyang.debug(false);
+        recognition.say('Time for some thrilling heroics');
+        expect(console.log).not.toHaveBeenCalled();
+      });
     });
   });
 
