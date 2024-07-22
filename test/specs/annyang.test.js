@@ -38,6 +38,7 @@ describe('annyang', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    logSpy.mockRestore();
   });
 
   describe('isSpeechRecognitionSupported', () => {
@@ -56,17 +57,17 @@ describe('annyang', () => {
     it('should turn on debug messages when called without a parameter', () => {
       annyang.debug();
       annyang.addCommands({ 'test command': () => {} });
-      expect(console.log).toHaveBeenCalled();
+      expect(logSpy).toHaveBeenCalled();
     });
     it('should turn on debug messages when called with a truthy parameter', () => {
       annyang.debug(11);
       annyang.addCommands({ 'test command': () => {} });
-      expect(console.log).toHaveBeenCalled();
+      expect(logSpy).toHaveBeenCalled();
     });
     it('should turn off debug messages when called with a falsy parameter', () => {
       annyang.debug(0);
       annyang.addCommands({ 'test command': () => {} });
-      expect(console.log).not.toHaveBeenCalled();
+      expect(logSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -107,8 +108,8 @@ describe('annyang', () => {
           'Time for some thrilling heroics': () => {},
         });
 
-        expect(console.log).toHaveBeenCalledTimes(1);
-        expect(console.log).toHaveBeenCalledWith(
+        expect(logSpy).toHaveBeenCalledTimes(1);
+        expect(logSpy).toHaveBeenCalledWith(
           'Command successfully loaded: %cTime for some thrilling heroics',
           'font-weight: bold; color: #00f;'
         );
@@ -118,7 +119,7 @@ describe('annyang', () => {
           'We should start dealing in those black-market beagles': () => {},
         });
 
-        expect(console.log).toHaveBeenCalledTimes(3);
+        expect(logSpy).toHaveBeenCalledTimes(3);
       });
 
       it('should not write to console commands added when debug is off', () => {
@@ -131,19 +132,19 @@ describe('annyang', () => {
           'We should start dealing in those black-market beagles': () => {},
         });
 
-        expect(console.log).not.toHaveBeenCalled();
+        expect(logSpy).not.toHaveBeenCalled();
       });
 
       it('should write to console when commands could not be added and debug is on', () => {
         annyang.debug(true);
-        expect(console.log).not.toHaveBeenCalled();
+        expect(logSpy).not.toHaveBeenCalled();
 
         annyang.addCommands({
           'Time for some thrilling heroics': 'not_a_function',
         });
 
-        expect(console.log).toHaveBeenCalledTimes(1);
-        expect(console.log).toHaveBeenCalledWith(
+        expect(logSpy).toHaveBeenCalledTimes(1);
+        expect(logSpy).toHaveBeenCalledWith(
           'Can not register command: %cTime for some thrilling heroics',
           'font-weight: bold; color: #00f;'
         );
@@ -154,7 +155,7 @@ describe('annyang', () => {
         annyang.addCommands({
           'Time for some thrilling heroics': 'not_a_function',
         });
-        expect(console.log).not.toHaveBeenCalled();
+        expect(logSpy).not.toHaveBeenCalled();
       });
     });
   });
@@ -637,8 +638,8 @@ describe('annyang', () => {
         annyang.start();
         annyang.start();
 
-        expect(console.log).toHaveBeenCalledTimes(1);
-        expect(console.log).toHaveBeenCalledWith(
+        expect(logSpy).toHaveBeenCalledTimes(1);
+        expect(logSpy).toHaveBeenCalledWith(
           "Failed to execute 'start' on 'SpeechRecognition': recognition has already started."
         );
       });
@@ -649,7 +650,7 @@ describe('annyang', () => {
         annyang.start();
         annyang.start();
 
-        expect(console.log).not.toHaveBeenCalled();
+        expect(logSpy).not.toHaveBeenCalled();
       });
     });
   });
@@ -761,16 +762,16 @@ describe('annyang', () => {
 
       it('should log a message if speech detected while paused and debug is on', () => {
         annyang.debug();
-        expect(console.log).not.toHaveBeenCalled();
+        expect(logSpy).not.toHaveBeenCalled();
         recognition.say('Time for some thrilling heroics');
-        expect(console.log).toHaveBeenCalledTimes(1);
-        expect(console.log).toHaveBeenCalledWith('Speech heard, but annyang is paused');
+        expect(logSpy).toHaveBeenCalledTimes(1);
+        expect(logSpy).toHaveBeenCalledWith('Speech heard, but annyang is paused');
       });
 
       it('should not log a message if speech detected while paused and debug is off', () => {
         annyang.debug(false);
         recognition.say('Time for some thrilling heroics');
-        expect(console.log).not.toHaveBeenCalled();
+        expect(logSpy).not.toHaveBeenCalled();
       });
     });
   });
@@ -828,8 +829,8 @@ describe('annyang', () => {
         annyang.debug(true);
         annyang.resume();
 
-        expect(console.log).toHaveBeenCalledTimes(1);
-        expect(console.log).toHaveBeenCalledWith(
+        expect(logSpy).toHaveBeenCalledTimes(1);
+        expect(logSpy).toHaveBeenCalledWith(
           "Failed to execute 'start' on 'SpeechRecognition': recognition has already started."
         );
       });
@@ -838,7 +839,7 @@ describe('annyang', () => {
         annyang.debug(false);
         annyang.resume();
 
-        expect(console.log).not.toHaveBeenCalled();
+        expect(logSpy).not.toHaveBeenCalled();
       });
     });
   });
