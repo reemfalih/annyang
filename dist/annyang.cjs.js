@@ -324,6 +324,8 @@ const start = (options = {}) => {
   }
   if (options.autoRestart !== undefined) {
     autoRestart = !!options.autoRestart;
+  } else {
+    autoRestart = true;
   }
   if (options.continuous !== undefined) {
     recognition.continuous = !!options.continuous;

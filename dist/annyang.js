@@ -325,6 +325,8 @@ var annyang = (function (exports) {
     }
     if (options.autoRestart !== undefined) {
       autoRestart = !!options.autoRestart;
+    } else {
+      autoRestart = true;
     }
     if (options.continuous !== undefined) {
       recognition.continuous = !!options.continuous;

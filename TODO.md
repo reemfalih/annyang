@@ -26,3 +26,4 @@
 - Deprecate `annyang.init()`. This was deprecated in v1.1.0 and removed in v3.0.0
 - annyang.addCommands() now supports a second parameter to remove all existing commands first
 - Deprecated undocumented behavior where a commands object could contain a string instead of a function as the action
+- Fix: `autoRestart` is now true by default, even after an annyang.abort() call. Previously if you launched annyang without defining `autoRestart`, it would default to true, you you then aborted annyang and called annyang.start() again, `autoRestart` would remain false.

@@ -588,6 +588,18 @@ describe('annyang', () => {
           vi.advanceTimersByTime(10000);
           expect(annyang.isListening()).toBe(false);
         });
+
+        it('should default to true, even after an annyang.abort() call', () => {
+          annyang.start();
+          annyang.abort();
+          annyang.start();
+
+          expect(annyang.isListening()).toBe(true);
+          annyang.getSpeechRecognizer().abort();
+          expect(annyang.isListening()).toBe(false);
+          vi.advanceTimersByTime(20000);
+          expect(annyang.isListening()).toBe(true);
+        });
       });
 
       describe('paused', () => {
