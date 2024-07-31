@@ -48,6 +48,28 @@ describe('annyang', () => {
     expect(annyang.isListening()).toBe(false);
   });
 
+  it('should recognize when Speech Recognition engine is repeatedly aborted as soon as it is started and console.log about it once every 10 seconds', () => {
+    const recognition = annyang.getSpeechRecognizer();
+
+    const onStart = () => {
+      setTimeout(() => recognition.abort(), 1);
+    };
+
+    recognition.addEventListener('start', onStart);
+    annyang.debug();
+    annyang.start();
+    expect(logSpy).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(10000);
+    expect(logSpy).toHaveBeenCalledTimes(1);
+    expect(logSpy).toHaveBeenCalledWith(
+      'Speech Recognition is repeatedly stopping and starting. See http://is.gd/annyang_restarts for tips.'
+    );
+    vi.advanceTimersByTime(10000);
+    expect(logSpy).toHaveBeenCalledTimes(2);
+
+    recognition.removeEventListener('start', onStart);
+  });
+
   describe('isSpeechRecognitionSupported', () => {
     it('should be a function', () => {
       expect(annyang.isSpeechRecognitionSupported).toBeInstanceOf(Function);
