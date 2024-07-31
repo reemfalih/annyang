@@ -1019,6 +1019,39 @@ describe('annyang', () => {
   });
 
   describe('events', () => {
+    describe('start', () => {
+      let spyOnStart;
+
+      beforeEach(() => {
+        spyOnStart = vi.fn();
+        annyang.addCallback('start', spyOnStart);
+      });
+
+      it('should fire callback when annyang aborts', () => {
+        expect(spyOnStart).not.toHaveBeenCalled();
+        annyang.start();
+        expect(spyOnStart).toHaveBeenCalledTimes(1);
+      });
+
+      it('should not fire callback when annyang resumes from a paused state', () => {
+        expect(spyOnStart).not.toHaveBeenCalled();
+        annyang.start();
+        expect(spyOnStart).toHaveBeenCalledTimes(1);
+        annyang.pause();
+        annyang.start();
+        expect(spyOnStart).toHaveBeenCalledTimes(1);
+      });
+
+      it('should fire callback when annyang resumes from an aborted (stopped) state', () => {
+        expect(spyOnStart).not.toHaveBeenCalled();
+        annyang.start();
+        expect(spyOnStart).toHaveBeenCalledTimes(1);
+        annyang.abort();
+        annyang.start();
+        expect(spyOnStart).toHaveBeenCalledTimes(2);
+      });
+    });
+
     describe('end', () => {
       let spyOnEnd;
 
