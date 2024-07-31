@@ -1254,4 +1254,47 @@ describe('annyang', () => {
     // describe('errorPermissionBlocked', () => {});
     // describe('errorPermissionDenied', () => {});
   });
+
+  describe('result matching', () => {
+    let spyOnMatch;
+
+    beforeEach(() => {
+      spyOnMatch = vi.fn();
+      annyang.addCommands({
+        'Time for some (thrilling) heroics': spyOnMatch,
+      });
+      annyang.start();
+    });
+
+    it('should match when phrase matches exactly', () => {
+      expect(spyOnMatch).not.toHaveBeenCalled();
+      annyang.getSpeechRecognizer().say('Time for some heroics');
+      expect(spyOnMatch).toHaveBeenCalledTimes(1);
+    });
+
+    it('should match a commands even if the matched phrase is not the first SpeechRecognitionAlternative', () => {
+      const spyOnMatch2 = vi.fn();
+      annyang.removeCommands();
+      annyang.addCommands({
+        'Time for some (thrilling) heroics and so on and so forth': spyOnMatch2,
+      });
+      expect(spyOnMatch2).not.toHaveBeenCalled();
+      // Our SpeechRecognition mock will create SpeechRecognitionAlternatives that append "and so on and so forth" to the phrase said
+      annyang.getSpeechRecognizer().say('Time for some heroics');
+      expect(spyOnMatch2).toHaveBeenCalledTimes(1);
+    });
+
+    describe('debug messages', () => {
+      it('should write to console when a command matches if debug is on', () => {
+        expect(logSpy).toHaveBeenCalledTimes(0);
+        annyang.debug(true);
+        annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
+        expect(logSpy).toHaveBeenCalledTimes(2);
+        expect(logSpy).toHaveBeenLastCalledWith(
+          'command matched: %cTime for some (thrilling) heroics',
+          logFormatString
+        );
+      });
+    });
+  });
 });
