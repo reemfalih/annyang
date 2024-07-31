@@ -1079,5 +1079,177 @@ describe('annyang', () => {
         expect(spyOnEnd).toHaveBeenCalledTimes(1);
       });
     });
+
+    describe('soundstart', () => {
+      let spyOnSoundStart;
+
+      beforeEach(() => {
+        spyOnSoundStart = vi.fn();
+        annyang.addCallback('soundstart', spyOnSoundStart);
+      });
+
+      it('should fire callback when annyang detects sound', () => {
+        expect(spyOnSoundStart).toHaveBeenCalledTimes(0);
+        // Corti which is used to mock SpeechRecognition fires the soundstart event as soon as it starts
+        annyang.start();
+        expect(spyOnSoundStart).toHaveBeenCalledTimes(1);
+      });
+
+      it('should fire callback once when in continuous mode even when multiples phrases are said', () => {
+        // Corti which is used to mock SpeechRecognition fires the soundstart event as soon as it starts
+        annyang.start({ continuous: true });
+        expect(spyOnSoundStart).toHaveBeenCalledTimes(1);
+        annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
+        expect(spyOnSoundStart).toHaveBeenCalledTimes(1);
+        annyang.getSpeechRecognizer().say('That sounds like something out of science fiction');
+        expect(spyOnSoundStart).toHaveBeenCalledTimes(1);
+      });
+
+      it('should fire callback multiple times in non-continuous mode with autorestart', () => {
+        annyang.start({ continuous: false, autoRestart: true });
+        annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
+        expect(spyOnSoundStart).toHaveBeenCalledTimes(1);
+        vi.advanceTimersByTime(1000);
+        annyang.getSpeechRecognizer().say('That sounds like something out of science fiction');
+        expect(spyOnSoundStart).toHaveBeenCalledTimes(2);
+      });
+    });
+
+    describe('result', () => {
+      let spyOnResult;
+
+      beforeEach(() => {
+        spyOnResult = vi.fn();
+        annyang.addCallback('result', spyOnResult);
+        annyang.addCommands({
+          'Time for some thrilling heroics': () => {},
+        });
+        annyang.start();
+      });
+
+      it('should fire callback when a result is returned from Speech Recognition and a command was matched', () => {
+        expect(spyOnResult).not.toHaveBeenCalled();
+        annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
+        expect(spyOnResult).toHaveBeenCalledTimes(1);
+      });
+
+      it('should fire callback when a result is returned from Speech Recognition and a command was not matched', () => {
+        expect(spyOnResult).not.toHaveBeenCalled();
+        annyang.getSpeechRecognizer().say('That sounds like something out of science fiction');
+        expect(spyOnResult).toHaveBeenCalledTimes(1);
+      });
+
+      it('should call the callback with the first argument containing an array of all possible Speech Recognition Alternatives the user may have said', () => {
+        expect(spyOnResult).not.toHaveBeenCalled();
+        annyang.getSpeechRecognizer().say('That sounds like something out of science fiction');
+        expect(spyOnResult).toHaveBeenCalledTimes(1);
+        expect(spyOnResult).toHaveBeenCalledWith([
+          'That sounds like something out of science fiction',
+          'That sounds like something out of science fiction and so on',
+          'That sounds like something out of science fiction and so on and so forth',
+          'That sounds like something out of science fiction and so on and so forth and so on',
+          'That sounds like something out of science fiction and so on and so forth and so on and so forth',
+        ]);
+      });
+    });
+
+    describe('resultMatch', () => {
+      let spyOnResultMatch;
+
+      beforeEach(() => {
+        spyOnResultMatch = vi.fn();
+        annyang.addCallback('resultMatch', spyOnResultMatch);
+        annyang.addCommands({
+          'Time for some (thrilling) heroics': () => {},
+        });
+        annyang.start();
+      });
+
+      it('should fire callback when a result is returned from Speech Recognition and a command was matched', () => {
+        expect(spyOnResultMatch).not.toHaveBeenCalled();
+        annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
+        expect(spyOnResultMatch).toHaveBeenCalledTimes(1);
+      });
+
+      it('should not fire callback when a result is returned from Speech Recognition and a command was not matched', () => {
+        expect(spyOnResultMatch).not.toHaveBeenCalled();
+        annyang.getSpeechRecognizer().say('That sounds like something out of science fiction');
+        expect(spyOnResultMatch).not.toHaveBeenCalled();
+      });
+
+      it('should call the callback with the first argument containing the phrase the user said that matched a command', () => {
+        expect(spyOnResultMatch).not.toHaveBeenCalled();
+        annyang.getSpeechRecognizer().say('Time for some heroics');
+        expect(spyOnResultMatch).toHaveBeenCalledTimes(1);
+        expect(spyOnResultMatch).toHaveBeenCalledWith('Time for some heroics', expect.anything(), expect.anything());
+      });
+
+      it('should call the callback with the second argument containing the name of the matched command', () => {
+        expect(spyOnResultMatch).not.toHaveBeenCalled();
+        annyang.getSpeechRecognizer().say('Time for some heroics');
+        expect(spyOnResultMatch).toHaveBeenCalledTimes(1);
+        expect(spyOnResultMatch).toHaveBeenCalledWith(
+          expect.anything(),
+          'Time for some (thrilling) heroics',
+          expect.anything()
+        );
+      });
+
+      it('should call the callback with the third argument containing an array of all possible Speech Recognition Alternatives the user may have said', () => {
+        expect(spyOnResultMatch).not.toHaveBeenCalled();
+        annyang.getSpeechRecognizer().say('Time for some heroics');
+        expect(spyOnResultMatch).toHaveBeenCalledTimes(1);
+        expect(spyOnResultMatch).toHaveBeenCalledWith(expect.anything(), expect.anything(), [
+          'Time for some heroics',
+          'Time for some heroics and so on',
+          'Time for some heroics and so on and so forth',
+          'Time for some heroics and so on and so forth and so on',
+          'Time for some heroics and so on and so forth and so on and so forth',
+        ]);
+      });
+    });
+
+    describe('resultNoMatch', () => {
+      let spyOnResultNoMatch;
+
+      beforeEach(() => {
+        spyOnResultNoMatch = vi.fn();
+        annyang.addCallback('resultNoMatch', spyOnResultNoMatch);
+        annyang.addCommands({
+          'Time for some (thrilling) heroics': () => {},
+        });
+        annyang.start();
+      });
+
+      it('should not fire callback when a result is returned from Speech Recognition and a command was matched', () => {
+        expect(spyOnResultNoMatch).not.toHaveBeenCalled();
+        annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
+        expect(spyOnResultNoMatch).not.toHaveBeenCalled();
+      });
+
+      it('should fire callback when a result is returned from Speech Recognition and a command was not matched', () => {
+        expect(spyOnResultNoMatch).not.toHaveBeenCalled();
+        annyang.getSpeechRecognizer().say('That sounds like something out of science fiction');
+        expect(spyOnResultNoMatch).toHaveBeenCalledTimes(1);
+      });
+
+      it('should call the callback with the first argument containing an array of all possible Speech Recognition Alternatives the user may have said', () => {
+        expect(spyOnResultNoMatch).not.toHaveBeenCalled();
+        annyang.getSpeechRecognizer().say('That sounds like something out of science fiction');
+        expect(spyOnResultNoMatch).toHaveBeenCalledTimes(1);
+        expect(spyOnResultNoMatch).toHaveBeenCalledWith([
+          'That sounds like something out of science fiction',
+          'That sounds like something out of science fiction and so on',
+          'That sounds like something out of science fiction and so on and so forth',
+          'That sounds like something out of science fiction and so on and so forth and so on',
+          'That sounds like something out of science fiction and so on and so forth and so on and so forth',
+        ]);
+      });
+    });
+
+    // describe('error', () => {});
+    // describe('errorNetwork', () => {});
+    // describe('errorPermissionBlocked', () => {});
+    // describe('errorPermissionDenied', () => {});
   });
 });
