@@ -70,7 +70,7 @@ describe('annyang', () => {
     recognition.removeEventListener('start', onStart);
   });
 
-  describe('isSpeechRecognitionSupported', () => {
+  describe('isSpeechRecognitionSupported()', () => {
     it('should be a function', () => {
       expect(annyang.isSpeechRecognitionSupported).toBeInstanceOf(Function);
     });
@@ -79,7 +79,7 @@ describe('annyang', () => {
     });
   });
 
-  describe('debug', () => {
+  describe('debug()', () => {
     it('should be a function', () => {
       expect(annyang.isSpeechRecognitionSupported).toBeInstanceOf(Function);
     });
@@ -100,7 +100,7 @@ describe('annyang', () => {
     });
   });
 
-  describe('addCommands', () => {
+  describe('addCommands()', () => {
     it('should be a function', () => {
       expect(annyang.addCommands).toBeInstanceOf(Function);
     });
@@ -128,7 +128,7 @@ describe('annyang', () => {
       });
     });
 
-    describe('debug', () => {
+    describe('debug messages', () => {
       it('should write to console each command that was successfully added when debug is on', () => {
         expect(logSpy).toHaveBeenCalledTimes(0);
         annyang.debug(true);
@@ -189,7 +189,7 @@ describe('annyang', () => {
     });
   });
 
-  describe('removeCommands', () => {
+  describe('removeCommands()', () => {
     let recognition;
     let spyOnMatch1;
     let spyOnMatch2;
@@ -330,7 +330,7 @@ describe('annyang', () => {
     });
   });
 
-  describe('addCallback', () => {
+  describe('addCallback()', () => {
     it('should be a function', () => {
       expect(annyang.addCallback).toBeInstanceOf(Function);
     });
@@ -422,7 +422,7 @@ describe('annyang', () => {
     });
   });
 
-  describe('removeCallback', () => {
+  describe('removeCallback()', () => {
     let spy1;
     let spy2;
     let spy3;
@@ -496,7 +496,7 @@ describe('annyang', () => {
     });
   });
 
-  describe('getSpeechRecognizer', () => {
+  describe('getSpeechRecognizer()', () => {
     it('should be a function', () => {
       expect(annyang.getSpeechRecognizer).toBeInstanceOf(Function);
     });
@@ -514,7 +514,7 @@ describe('annyang', () => {
     });
   });
 
-  describe('start', () => {
+  describe('start()', () => {
     let recognition;
     let spyOnStart1;
     let spyOnStart2;
@@ -672,7 +672,7 @@ describe('annyang', () => {
       });
     });
 
-    describe('deubg', () => {
+    describe('deubg messages', () => {
       it('should write a message to log when annyang is already started and debug is on', () => {
         expect(logSpy).toHaveBeenCalledTimes(0);
         annyang.debug(true);
@@ -696,7 +696,7 @@ describe('annyang', () => {
     });
   });
 
-  describe('abort', () => {
+  describe('abort()', () => {
     let spyOnEnd;
     let recognition;
 
@@ -744,7 +744,7 @@ describe('annyang', () => {
     });
   });
 
-  describe('pause', () => {
+  describe('pause()', () => {
     let recognition;
 
     beforeEach(() => {
@@ -796,7 +796,7 @@ describe('annyang', () => {
       expect(recognition.isStarted()).toBe(false);
     });
 
-    describe('debug', () => {
+    describe('debug messages', () => {
       beforeEach(() => {
         annyang.pause();
       });
@@ -817,7 +817,7 @@ describe('annyang', () => {
     });
   });
 
-  describe('resume', () => {
+  describe('resume()', () => {
     let recognition;
 
     beforeEach(() => {
@@ -865,7 +865,7 @@ describe('annyang', () => {
       expect(recognition.isStarted()).toBe(true);
     });
 
-    describe('debug', () => {
+    describe('debug messages', () => {
       it('should log a message if debug is on, and resume was called when annyang is listening', () => {
         annyang.debug(true);
         annyang.resume();
@@ -885,7 +885,7 @@ describe('annyang', () => {
     });
   });
 
-  describe('setLanguage', () => {
+  describe('setLanguage()', () => {
     it('should be a function', () => {
       expect(annyang.setLanguage).toBeInstanceOf(Function);
     });
@@ -901,7 +901,7 @@ describe('annyang', () => {
     });
   });
 
-  describe('isListening', () => {
+  describe('isListening()', () => {
     it('should be a function', () => {
       expect(annyang.isListening).toBeInstanceOf(Function);
     });
@@ -942,7 +942,7 @@ describe('annyang', () => {
     });
   });
 
-  describe('trigger', () => {
+  describe('trigger()', () => {
     let spyOnCommand, spyOnResult;
 
     beforeEach(() => {
