@@ -5,6 +5,8 @@ import { SpeechRecognition as MockSpeechRecognition } from 'corti';
 import * as annyang from '../../src/annyang';
 import { isSpeechRecognitionSupported, start, isListening } from '../../src/annyang';
 
+const logFormatString = 'font-weight: bold; color: #00f;';
+
 test('SpeechRecognition is mocked', () => {
   expect(globalThis.SpeechRecognition).toBeDefined();
   expect(new globalThis.SpeechRecognition()).toBeInstanceOf(MockSpeechRecognition);
@@ -140,7 +142,7 @@ describe('annyang', () => {
         expect(logSpy).toHaveBeenCalledTimes(1);
         expect(logSpy).toHaveBeenCalledWith(
           'Command successfully loaded: %cTime for some thrilling heroics',
-          'font-weight: bold; color: #00f;'
+          logFormatString
         );
 
         annyang.addCommands({
@@ -175,7 +177,7 @@ describe('annyang', () => {
         expect(logSpy).toHaveBeenCalledTimes(1);
         expect(logSpy).toHaveBeenCalledWith(
           'Can not register command: %cTime for some thrilling heroics',
-          'font-weight: bold; color: #00f;'
+          logFormatString
         );
       });
 
