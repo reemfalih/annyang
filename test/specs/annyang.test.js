@@ -1273,7 +1273,7 @@ describe('annyang', () => {
         "You can't take the :thing from me": spyOnMatch3,
       });
 
-      annyang.start();
+      annyang.start({ continuous: true });
     });
 
     it('should match when phrase matches exactly', () => {
@@ -1298,6 +1298,22 @@ describe('annyang', () => {
       annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
       expect(spyOnMatch1).toHaveBeenCalledTimes(1);
       expect(spyOnMatch4).not.toHaveBeenCalled();
+    });
+
+    it("should accept callbacks in commands object by name if they are in the globalThis scope. e.g. {'hello': 'helloFunc'}", () => {
+      globalThis.spyOnMatch5 = vi.fn();
+      annyang.addCommands(
+        {
+          "You can't take the sky from me": 'spyOnMatch1',
+          'Time for some (thrilling) heroics': 'spyOnMatch5',
+        },
+        true
+      );
+      annyang.getSpeechRecognizer().say("You can't take the sky from me");
+      annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
+
+      expect(spyOnMatch1).not.toHaveBeenCalled;
+      expect(spyOnMatch5).toHaveBeenCalledTimes(1);
     });
 
     describe('debug messages', () => {

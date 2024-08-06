@@ -252,7 +252,7 @@ var annyang = (function (exports) {
     }
 
     Object.keys(commands).forEach(phrase => {
-      const cb = commands[phrase];
+      const cb = globalThis[commands[phrase]] || commands[phrase];
       if (typeof cb === 'function') {
         // convert command to regex then register the command
         registerCommand(commandToRegExp(phrase), cb, phrase);
