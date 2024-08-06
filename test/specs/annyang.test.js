@@ -1348,6 +1348,21 @@ describe('annyang', () => {
       expect(spyOnMatch4).toHaveBeenCalledWith('black-market beagles');
     });
 
+    it('should match commands with optional words when the word appears in the sentence', () => {
+      recognition.say('Time for some thrilling heroics');
+      expect(spyOnMatch1).toHaveBeenCalledTimes(1);
+    });
+
+    it('should match commands with optional words when the word does not appear in the sentence', () => {
+      recognition.say('Time for some heroics');
+      expect(spyOnMatch1).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not match commands with optional words when a different word is in the sentence', () => {
+      recognition.say('Time for some gorram heroics');
+      expect(spyOnMatch1).not.toHaveBeenCalled();
+    });
+
     it('should match a commands even if the matched phrase is not the first SpeechRecognitionAlternative', () => {
       expect(spyOnMatch2).not.toHaveBeenCalled();
       // Our SpeechRecognition mock will create SpeechRecognitionAlternatives that append "and so on and so forth" to the phrase said
