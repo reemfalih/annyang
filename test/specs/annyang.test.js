@@ -43,7 +43,7 @@ describe('annyang', () => {
     logSpy.mockRestore();
   });
 
-  it('should recognize when Speech Recognition engine was aborted', () => {
+  it('should recognize when Speech Recognition engine was aborted and abort annyang', () => {
     annyang.start();
     expect(annyang.isListening()).toBe(true);
     annyang.getSpeechRecognizer().abort();
