@@ -1284,6 +1284,49 @@ describe('annyang', () => {
       expect(spyOnMatch1).toHaveBeenCalledTimes(1);
     });
 
+    it('should match commands with a named variable as the last word in the sentence', () => {
+      annyang.removeCommands();
+      annyang.addCommands({
+        "You can't take the sky from :whom": spyOnMatch4,
+      });
+      recognition.say("You can't take the sky from me");
+      expect(spyOnMatch4).toHaveBeenCalledTimes(1);
+    });
+
+    it('should match commands with a named variable in the middle of the sentence', () => {
+      annyang.removeCommands();
+      annyang.addCommands({
+        "You can't take the :thing from me": spyOnMatch4,
+      });
+      recognition.say("You can't take the sky from me");
+      expect(spyOnMatch4).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not match commands with more than one word in the position of a named variable', () => {
+      recognition.say("You can't take the sky from me");
+      expect(spyOnMatch3).toHaveBeenCalledTimes(1);
+      recognition.say("You can't take the stuff from me");
+      expect(spyOnMatch3).toHaveBeenCalledTimes(2);
+      recognition.say("You can't take the sky and stuff from me");
+      expect(spyOnMatch3).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not match commands with nothing in the position of a named variable', () => {
+      recognition.say("You can't take the sky from me");
+      expect(spyOnMatch3).toHaveBeenCalledTimes(1);
+      recognition.say("You can't take the stuff from me");
+      expect(spyOnMatch3).toHaveBeenCalledTimes(2);
+      recognition.say("You can't take the from me");
+      expect(spyOnMatch3).toHaveBeenCalledTimes(2);
+    });
+
+    it('should pass named variables to the callback function', () => {
+      recognition.say("You can't take the sky from me");
+      expect(spyOnMatch3).toHaveBeenLastCalledWith('sky');
+      recognition.say("You can't take the stuff from me");
+      expect(spyOnMatch3).toHaveBeenLastCalledWith('stuff');
+    });
+
     it('should match a commands even if the matched phrase is not the first SpeechRecognitionAlternative', () => {
       expect(spyOnMatch2).not.toHaveBeenCalled();
       // Our SpeechRecognition mock will create SpeechRecognitionAlternatives that append "and so on and so forth" to the phrase said
