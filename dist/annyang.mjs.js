@@ -19,18 +19,18 @@ let autoRestart = true;
 let debugState = false;
 const debugStyle = 'font-weight: bold; color: #00f;';
 const commandsList = new Map();
-const callbacks = {
-  start: [],
-  error: [],
-  end: [],
-  soundstart: [],
-  result: [],
-  resultMatch: [],
-  resultNoMatch: [],
-  errorNetwork: [],
-  errorPermissionBlocked: [],
-  errorPermissionDenied: [],
-};
+const callbacks = new Map([
+  ['start', []],
+  ['error', []],
+  ['end', []],
+  ['soundstart', []],
+  ['result', []],
+  ['resultMatch', []],
+  ['resultNoMatch', []],
+  ['errorNetwork', []],
+  ['errorPermissionBlocked', []],
+  ['errorPermissionDenied', []],
+]);
 let lastStartedAt = 0;
 let autoRestartCount = 0;
 let pauseListening = false;
@@ -112,19 +112,19 @@ const init = () => {
 
   recognition.onstart = () => {
     listening = true;
-    invokeCallbacks(callbacks.start);
+    invokeCallbacks(callbacks.get('start'));
   };
 
   recognition.onsoundstart = () => {
-    invokeCallbacks(callbacks.soundstart);
+    invokeCallbacks(callbacks.get('soundstart'));
   };
 
   recognition.onerror = event => {
-    invokeCallbacks(callbacks.error, event);
+    invokeCallbacks(callbacks.get('error'), event);
     /* eslint-disable-next-line default-case */
     switch (event.error) {
       case 'network':
-        invokeCallbacks(callbacks.errorNetwork, event);
+        invokeCallbacks(callbacks.get('errorNetwork'), event);
         break;
       case 'not-allowed':
       case 'service-not-allowed':
@@ -132,9 +132,9 @@ const init = () => {
         autoRestart = false;
         // determine if permission was denied by user or automatically.
         if (new Date().getTime() - lastStartedAt < 200) {
-          invokeCallbacks(callbacks.errorPermissionBlocked, event);
+          invokeCallbacks(callbacks.get('errorPermissionBlocked'), event);
         } else {
-          invokeCallbacks(callbacks.errorPermissionDenied, event);
+          invokeCallbacks(callbacks.get('errorPermissionDenied'), event);
         }
         break;
     }
@@ -142,7 +142,7 @@ const init = () => {
 
   recognition.onend = () => {
     listening = false;
-    invokeCallbacks(callbacks.end);
+    invokeCallbacks(callbacks.get('end'));
     // annyang will auto restart if it is closed automatically and not by user action.
     if (autoRestart) {
       // play nicely with the browser, and never restart annyang automatically more than once per second
@@ -195,11 +195,11 @@ const parseResults = recognitionResults => {
       }
       // execute the matched command
       currentCommand.callback.apply(undefined, parameters);
-      invokeCallbacks(callbacks.resultMatch, commandText, originalPhrase, recognitionResults);
+      invokeCallbacks(callbacks.get('resultMatch'), commandText, originalPhrase, recognitionResults);
       commandMatchFound = true;
     }
   };
-  invokeCallbacks(callbacks.result, recognitionResults);
+  invokeCallbacks(callbacks.get('result'), recognitionResults);
   let commandText;
   // go over each of the RecognitionResults received (maxAlternatives is set to 5)
   let commandMatchFound = false;
@@ -212,7 +212,7 @@ const parseResults = recognitionResults => {
     // try and match the recognized text to one of the commands on the list
     commandsList.forEach(parseCommand);
   }
-  invokeCallbacks(callbacks.resultNoMatch, recognitionResults);
+  invokeCallbacks(callbacks.get('resultNoMatch'), recognitionResults);
 };
 
 /**
@@ -442,8 +442,8 @@ const resume = () => {
  * @method addCallback
  */
 const addCallback = (type, callback, context = undefined) => {
-  if (typeof callback === 'function' && callbacks[type] !== undefined) {
-    callbacks[type].push({ callback, context });
+  if (typeof callback === 'function' && callbacks.has(type)) {
+    callbacks.get(type).push({ callback, context });
   }
 };
 
@@ -485,15 +485,15 @@ const removeCallback = (type, callback) => {
     return cb.callback !== callback;
   };
   // Iterate over each callback type in the callbacks object
-  Object.keys(callbacks).forEach(callbackType => {
+  callbacks.forEach((callbacksArray, callbackType) => {
     // if this is the type user asked to delete, or he asked to delete all, go ahead.
     if (type === undefined || type === callbackType) {
       // If user asked to delete all callbacks in this type or all types
       if (callback === undefined) {
-        callbacks[callbackType] = [];
+        callbacksArray.length = 0;
       } else {
         // Remove all matching callbacks
-        callbacks[callbackType] = callbacks[callbackType].filter(compareWithCallbackParameter);
+        callbacks.set(callbackType, callbacks.get(callbackType).filter(compareWithCallbackParameter));
       }
     }
   });

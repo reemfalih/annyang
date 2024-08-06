@@ -10,7 +10,6 @@
 - [ ] Upgrade to ESLint 9
 - [ ] Remove `init()` from docs
 - [ ] Check what happens if setLanguage() is called before init()
-- [ ] Change callbacks to a Map
 - [ ] Extract command matching code into a separate file
 - [ ] Refactor 'Map the results to an array' in recognition.onresult
 - [ ] Check what happens if annyang is imported more than once in the same file or different files. Can it be a singleton?
