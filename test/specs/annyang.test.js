@@ -945,7 +945,8 @@ describe('annyang', () => {
   });
 
   describe('trigger()', () => {
-    let spyOnCommand, spyOnResult;
+    let spyOnCommand;
+    let spyOnResult;
 
     beforeEach(() => {
       spyOnCommand = vi.fn();
@@ -1445,8 +1446,8 @@ describe('annyang', () => {
       recognition.say("You can't take the sky from me");
       recognition.say('Time for some thrilling heroics');
 
-      expect(spyOnMatch1).not.toHaveBeenCalled;
-      expect(globalSpyOnMatch).toHaveBeenCalledTimes(1);
+      expect(spyOnMatch1).not.toHaveBeenCalled();
+      expect(globalThis.globalSpyOnMatch).toHaveBeenCalledTimes(1);
     });
 
     it('should match commands passed as a command name and an object which consists of a regular expression and a callback', () => {
