@@ -1260,6 +1260,7 @@ describe('annyang', () => {
     let spyOnMatch2;
     let spyOnMatch3;
     let spyOnMatch4;
+    let spyOnMatch5;
     let recognition;
 
     beforeEach(() => {
@@ -1267,11 +1268,13 @@ describe('annyang', () => {
       spyOnMatch2 = vi.fn();
       spyOnMatch3 = vi.fn();
       spyOnMatch4 = vi.fn();
+      spyOnMatch5 = vi.fn();
 
       annyang.addCommands({
         'Time for some (thrilling) heroics': spyOnMatch1,
         'That sounds like something out of science fiction and so on and so forth': spyOnMatch2,
         "You can't take the :thing from me": spyOnMatch3,
+        'We should start dealing in those *merchandise': spyOnMatch4,
       });
 
       annyang.start({ continuous: true });
@@ -1287,19 +1290,19 @@ describe('annyang', () => {
     it('should match commands with a named variable as the last word in the sentence', () => {
       annyang.removeCommands();
       annyang.addCommands({
-        "You can't take the sky from :whom": spyOnMatch4,
+        "You can't take the sky from :whom": spyOnMatch5,
       });
       recognition.say("You can't take the sky from me");
-      expect(spyOnMatch4).toHaveBeenCalledTimes(1);
+      expect(spyOnMatch5).toHaveBeenCalledTimes(1);
     });
 
     it('should match commands with a named variable in the middle of the sentence', () => {
       annyang.removeCommands();
       annyang.addCommands({
-        "You can't take the :thing from me": spyOnMatch4,
+        "You can't take the :thing from me": spyOnMatch5,
       });
       recognition.say("You can't take the sky from me");
-      expect(spyOnMatch4).toHaveBeenCalledTimes(1);
+      expect(spyOnMatch5).toHaveBeenCalledTimes(1);
     });
 
     it('should not match commands with more than one word in the position of a named variable', () => {
@@ -1327,6 +1330,24 @@ describe('annyang', () => {
       expect(spyOnMatch3).toHaveBeenLastCalledWith('stuff');
     });
 
+    it('should match commands with one or more words matched by splats', () => {
+      recognition.say('We should start dealing in those beagles');
+      expect(spyOnMatch4).toHaveBeenCalledTimes(1);
+      recognition.say('We should start dealing in those black-market beagles');
+      expect(spyOnMatch4).toHaveBeenCalledTimes(2);
+    });
+
+    it('should match commands with nothing matched by splats', () => {
+      recognition.say('We should start dealing in those');
+      expect(spyOnMatch4).toHaveBeenCalledTimes(1);
+    });
+
+    it('should pass what was captured by splats to the callback function', () => {
+      recognition.say('We should start dealing in those black-market beagles');
+      expect(spyOnMatch4).toHaveBeenCalledTimes(1);
+      expect(spyOnMatch4).toHaveBeenCalledWith('black-market beagles');
+    });
+
     it('should match a commands even if the matched phrase is not the first SpeechRecognitionAlternative', () => {
       expect(spyOnMatch2).not.toHaveBeenCalled();
       // Our SpeechRecognition mock will create SpeechRecognitionAlternatives that append "and so on and so forth" to the phrase said
@@ -1337,12 +1358,12 @@ describe('annyang', () => {
     // @TODO: Change behavior so that when adding a command with an existing command phrase, it will run both callbacks
     it('should ignore commands in subsequent addCommands calls if the command phrase is already registered', () => {
       annyang.addCommands({
-        'Time for some (thrilling) heroics': spyOnMatch4,
+        'Time for some (thrilling) heroics': spyOnMatch5,
       });
 
       recognition.say('Time for some thrilling heroics');
       expect(spyOnMatch1).toHaveBeenCalledTimes(1);
-      expect(spyOnMatch4).not.toHaveBeenCalled();
+      expect(spyOnMatch5).not.toHaveBeenCalled();
     });
 
     it("should accept callbacks in commands object by name if they are in the globalThis scope. e.g. {'hello': 'helloFunc'}", () => {
@@ -1364,14 +1385,14 @@ describe('annyang', () => {
       annyang.addCommands({
         'It is time': {
           regexp: /\w* for some thrilling.*/,
-          callback: spyOnMatch4,
+          callback: spyOnMatch5,
         },
       });
 
       recognition.say('Time for some thrilling heroics');
-      expect(spyOnMatch4).toHaveBeenCalledTimes(1);
+      expect(spyOnMatch5).toHaveBeenCalledTimes(1);
       recognition.say('I feel the need for some thrilling heroics');
-      expect(spyOnMatch4).toHaveBeenCalledTimes(2);
+      expect(spyOnMatch5).toHaveBeenCalledTimes(2);
     });
 
     it('should pass variables from regular expression capturing groups to the callback function', () => {
@@ -1379,12 +1400,12 @@ describe('annyang', () => {
       annyang.addCommands({
         'It is time': {
           regexp: /Time for some (\w*) (\w*)/,
-          callback: spyOnMatch4,
+          callback: spyOnMatch5,
         },
       });
       recognition.say('Time for some thrilling heroics');
-      expect(spyOnMatch4).toHaveBeenCalledTimes(1);
-      expect(spyOnMatch4).toHaveBeenCalledWith('thrilling', 'heroics');
+      expect(spyOnMatch5).toHaveBeenCalledTimes(1);
+      expect(spyOnMatch5).toHaveBeenCalledWith('thrilling', 'heroics');
     });
 
     describe('debug messages', () => {
