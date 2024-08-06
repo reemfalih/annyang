@@ -1301,14 +1301,12 @@ describe('annyang', () => {
     });
 
     it("should accept callbacks in commands object by name if they are in the globalThis scope. e.g. {'hello': 'helloFunc'}", () => {
+      annyang.removeCommands();
       globalThis.globalSpyOnMatch = vi.fn();
-      annyang.addCommands(
-        {
-          "You can't take the sky from me": 'spyOnMatch1',
-          'Time for some (thrilling) heroics': 'globalSpyOnMatch',
-        },
-        true
-      );
+      annyang.addCommands({
+        "You can't take the sky from me": 'spyOnMatch1',
+        'Time for some (thrilling) heroics': 'globalSpyOnMatch',
+      });
       annyang.getSpeechRecognizer().say("You can't take the sky from me");
       annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
 
@@ -1317,15 +1315,13 @@ describe('annyang', () => {
     });
 
     it('should match commands passed as a command name and an object which consists of a regular expression and a callback', () => {
-      annyang.addCommands(
-        {
-          'It is time': {
-            regexp: /\w* for some thrilling.*/,
-            callback: spyOnMatch4,
-          },
+      annyang.removeCommands();
+      annyang.addCommands({
+        'It is time': {
+          regexp: /\w* for some thrilling.*/,
+          callback: spyOnMatch4,
         },
-        true
-      );
+      });
 
       annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
       expect(spyOnMatch4).toHaveBeenCalledTimes(1);
