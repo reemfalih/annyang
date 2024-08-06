@@ -1256,32 +1256,48 @@ describe('annyang', () => {
   });
 
   describe('result matching', () => {
-    let spyOnMatch;
+    let spyOnMatch1;
+    let spyOnMatch2;
+    let spyOnMatch3;
+    let spyOnMatch4;
 
     beforeEach(() => {
-      spyOnMatch = vi.fn();
+      spyOnMatch1 = vi.fn();
+      spyOnMatch2 = vi.fn();
+      spyOnMatch3 = vi.fn();
+      spyOnMatch4 = vi.fn();
+
       annyang.addCommands({
-        'Time for some (thrilling) heroics': spyOnMatch,
+        'Time for some (thrilling) heroics': spyOnMatch1,
+        'That sounds like something out of science fiction and so on and so forth': spyOnMatch2,
+        "You can't take the :thing from me": spyOnMatch3,
       });
+
       annyang.start();
     });
 
     it('should match when phrase matches exactly', () => {
-      expect(spyOnMatch).not.toHaveBeenCalled();
+      expect(spyOnMatch1).not.toHaveBeenCalled();
       annyang.getSpeechRecognizer().say('Time for some heroics');
-      expect(spyOnMatch).toHaveBeenCalledTimes(1);
+      expect(spyOnMatch1).toHaveBeenCalledTimes(1);
     });
 
     it('should match a commands even if the matched phrase is not the first SpeechRecognitionAlternative', () => {
-      const spyOnMatch2 = vi.fn();
-      annyang.removeCommands();
-      annyang.addCommands({
-        'Time for some (thrilling) heroics and so on and so forth': spyOnMatch2,
-      });
       expect(spyOnMatch2).not.toHaveBeenCalled();
       // Our SpeechRecognition mock will create SpeechRecognitionAlternatives that append "and so on and so forth" to the phrase said
-      annyang.getSpeechRecognizer().say('Time for some heroics');
+      annyang.getSpeechRecognizer().say('That sounds like something out of science fiction');
       expect(spyOnMatch2).toHaveBeenCalledTimes(1);
+    });
+
+    // @TODO: Change behavior so that when adding a command with an existing command phrase, it will run both callbacks
+    it('should ignore commands in subsequent addCommands calls if the command phrase is already registered', () => {
+      annyang.addCommands({
+        'Time for some (thrilling) heroics': spyOnMatch4,
+      });
+
+      annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
+      expect(spyOnMatch1).toHaveBeenCalledTimes(1);
+      expect(spyOnMatch4).not.toHaveBeenCalled();
     });
 
     describe('debug messages', () => {
@@ -1294,6 +1310,21 @@ describe('annyang', () => {
           'command matched: %cTime for some (thrilling) heroics',
           logFormatString
         );
+      });
+
+      it('should write to console with argument matched when command with an argument matches if debug is on', () => {
+        expect(logSpy).toHaveBeenCalledTimes(0);
+        annyang.debug(true);
+        annyang.getSpeechRecognizer().say("You can't take the sky from me");
+        expect(logSpy).toHaveBeenCalledTimes(3); // 1 console log for speech recognized + 1 for the command matching + 1 for the parameter
+        expect(logSpy).toHaveBeenLastCalledWith('with parameters', ['sky']);
+      });
+
+      it('should not write to console when a command matches if debug is off', () => {
+        expect(logSpy).toHaveBeenCalledTimes(0);
+        annyang.debug(false);
+        annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
+        expect(logSpy).not.toHaveBeenCalled();
       });
     });
   });
