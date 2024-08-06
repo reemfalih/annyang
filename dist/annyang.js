@@ -493,7 +493,7 @@ var annyang = (function (exports) {
       if (type === undefined || type === callbackType) {
         // If user asked to delete all callbacks in this type or all types
         if (callback === undefined) {
-          callbacksArray.length = 0;
+          callbacks.get(callbackType).length = 0;
         } else {
           // Remove all matching callbacks
           callbacks.set(callbackType, callbacks.get(callbackType).filter(compareWithCallbackParameter));
