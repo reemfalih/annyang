@@ -1425,15 +1425,15 @@ describe('annyang', () => {
       expect(spyOnMatch2).toHaveBeenCalledTimes(1);
     });
 
-    // @TODO: Change behavior so that when adding a command with an existing command phrase, it will run both callbacks. Should also enable test `should write to console each speech recognition alternative that is recognized when a command matches`
-    it('should ignore commands in subsequent addCommands calls if the command phrase is already registered', () => {
+    // @TODO: Change behavior so that when adding a command with an existing command phrase, it will run both callbacks. Should also enable test `should write to console each speech recognition alternative that is recognized when a command matches`. Should also update the changelog entry about changed behavior
+    it('should overwrite previously defined commands in subsequent addCommands calls if the command phrase is already registered', () => {
       annyang.addCommands({
         'Time for some (thrilling) heroics': spyOnMatch5,
       });
 
       recognition.say('Time for some thrilling heroics');
-      expect(spyOnMatch1).toHaveBeenCalledTimes(1);
-      expect(spyOnMatch5).not.toHaveBeenCalled();
+      expect(spyOnMatch1).not.toHaveBeenCalled();
+      expect(spyOnMatch5).toHaveBeenCalledTimes(1);
     });
 
     it("should accept callbacks in commands object by name if they are in the globalThis scope. e.g. {'hello': 'helloFunc'}", () => {

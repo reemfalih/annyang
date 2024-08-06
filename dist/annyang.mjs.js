@@ -18,7 +18,7 @@ let listening = false;
 let autoRestart = true;
 let debugState = false;
 const debugStyle = 'font-weight: bold; color: #00f;';
-let commandsList = [];
+const commandsList = new Map();
 const callbacks = {
   start: [],
   error: [],
@@ -79,7 +79,7 @@ const logMessage = (text, extraParameters) => {
 
 // Add a command to the commands list
 const registerCommand = (command, callback, originalPhrase) => {
-  commandsList.push({ command, callback, originalPhrase });
+  commandsList.set(originalPhrase, { command, callback });
   logMessage(`Command successfully loaded: %c${originalPhrase}`, debugStyle);
 };
 
@@ -183,31 +183,34 @@ const initIfNeeded = () => {
   }
 };
 
-const parseResults = function (recognitionResults) {
+const parseResults = recognitionResults => {
+  const parseCommand = (currentCommand, originalPhrase) => {
+    if (commandMatchFound) return;
+    const matchedCommand = currentCommand.command.exec(commandText);
+    if (matchedCommand) {
+      const parameters = matchedCommand.slice(1);
+      logMessage(`command matched: %c${originalPhrase}`, debugStyle);
+      if (parameters.length) {
+        logMessage('with parameters', parameters);
+      }
+      // execute the matched command
+      currentCommand.callback.apply(undefined, parameters);
+      invokeCallbacks(callbacks.resultMatch, commandText, originalPhrase, recognitionResults);
+      commandMatchFound = true;
+    }
+  };
   invokeCallbacks(callbacks.result, recognitionResults);
   let commandText;
   // go over each of the RecognitionResults received (maxAlternatives is set to 5)
+  let commandMatchFound = false;
   for (let i = 0; i < recognitionResults.length; i += 1) {
+    if (commandMatchFound) return;
     // the text recognized
     commandText = recognitionResults[i].trim();
     logMessage(`Speech recognized: %c${commandText}`, debugStyle);
 
     // try and match the recognized text to one of the commands on the list
-    for (let j = 0, l = commandsList.length; j < l; j += 1) {
-      const currentCommand = commandsList[j];
-      const matchedCommand = currentCommand.command.exec(commandText);
-      if (matchedCommand) {
-        const parameters = matchedCommand.slice(1);
-        logMessage(`command matched: %c${currentCommand.originalPhrase}`, debugStyle);
-        if (parameters.length) {
-          logMessage('with parameters', parameters);
-        }
-        // execute the matched command
-        currentCommand.callback.apply(this, parameters);
-        invokeCallbacks(callbacks.resultMatch, commandText, currentCommand.originalPhrase, recognitionResults);
-        return;
-      }
-    }
+    commandsList.forEach(parseCommand);
   }
   invokeCallbacks(callbacks.resultNoMatch, recognitionResults);
 };
@@ -245,7 +248,7 @@ const addCommands = (commands, resetCommands = false) => {
   initIfNeeded();
 
   if (resetCommands) {
-    commandsList.length = 0;
+    commandsList.clear();
   }
 
   Object.keys(commands).forEach(phrase => {
@@ -286,10 +289,10 @@ const addCommands = (commands, resetCommands = false) => {
  */
 const removeCommands = commandsToRemove => {
   if (commandsToRemove === undefined) {
-    commandsList.length = 0;
+    commandsList.clear();
   } else {
     const commandsToRemoveArray = Array.isArray(commandsToRemove) ? commandsToRemove : [commandsToRemove];
-    commandsList = commandsList.filter(command => !commandsToRemoveArray.includes(command.originalPhrase));
+    commandsToRemoveArray.forEach(command => commandsList.delete(command));
   }
 };
 

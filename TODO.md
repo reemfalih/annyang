@@ -10,7 +10,6 @@
 - [ ] Upgrade to ESLint 9
 - [ ] Remove `init()` from docs
 - [ ] Check what happens if setLanguage() is called before init()
-- [ ] Change commandsList to a Map
 - [ ] Change callbacks to a Map
 - [ ] Extract command matching code into a separate file
 - [ ] Refactor 'Map the results to an array' in recognition.onresult
@@ -27,3 +26,4 @@
 - annyang.addCommands() now supports a second parameter to remove all existing commands first
 - Deprecated undocumented behavior where a commands object could contain a string instead of a function as the action
 - Fix: `autoRestart` is now true by default, even after an annyang.abort() call. Previously if you launched annyang without defining `autoRestart`, it would default to true, you you then aborted annyang and called annyang.start() again, `autoRestart` would remain false.
+- Registering a command with an existing command phrase will now overwrite the previous command
