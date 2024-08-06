@@ -21,6 +21,12 @@
       "rules": {
         "max-len": "off"
       }
+    },
+    {
+      "files": ["src/annyang.js"],
+      "rules": {
+        "no-use-before-define": "off"
+      }
     }
   ]
 }
