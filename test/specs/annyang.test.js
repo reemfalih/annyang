@@ -1363,6 +1363,60 @@ describe('annyang', () => {
       expect(spyOnMatch1).not.toHaveBeenCalled();
     });
 
+    it('should not break when a command is removed by another command being called', () => {
+      const spyMal = vi.fn(() => {
+        annyang.removeCommands();
+      });
+      const spyWash = vi.fn(() => {
+        annyang.removeCommands('Mal');
+      });
+
+      const commands = {
+        Mal: spyMal,
+        Wash: spyWash,
+      };
+
+      annyang.removeCommands();
+      annyang.addCommands(commands);
+
+      expect(() => {
+        recognition.say('Mal');
+      }).not.toThrowError();
+
+      annyang.addCommands(commands, true);
+
+      expect(() => {
+        recognition.say('Wash');
+      }).not.toThrowError();
+      expect(spyMal).toHaveBeenCalledTimes(1);
+      expect(spyWash).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not break when a command is added by another command being called', () => {
+      const spyZoe = vi.fn();
+
+      const spyMal = vi.fn(() => {
+        annyang.addCommands({ Zoe: spyZoe });
+      });
+
+      const commands = {
+        Mal: spyMal,
+      };
+
+      annyang.addCommands(commands, true);
+
+      expect(() => {
+        recognition.say('Mal');
+      }).not.toThrowError();
+
+      expect(() => {
+        recognition.say('Zoe');
+      }).not.toThrowError();
+
+      expect(spyMal).toHaveBeenCalledTimes(1);
+      expect(spyZoe).toHaveBeenCalledTimes(1);
+    });
+
     it('should match a commands even if the matched phrase is not the first SpeechRecognitionAlternative', () => {
       expect(spyOnMatch2).not.toHaveBeenCalled();
       // Our SpeechRecognition mock will create SpeechRecognitionAlternatives that append "and so on and so forth" to the phrase said
