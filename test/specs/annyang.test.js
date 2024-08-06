@@ -1331,6 +1331,19 @@ describe('annyang', () => {
       expect(spyOnMatch4).toHaveBeenCalledTimes(2);
     });
 
+    it('should pass variables from regular expression capturing groups to the callback function', () => {
+      annyang.removeCommands();
+      annyang.addCommands({
+        'It is time': {
+          regexp: /Time for some (\w*) (\w*)/,
+          callback: spyOnMatch4,
+        },
+      });
+      recognition.say('Time for some thrilling heroics');
+      expect(spyOnMatch4).toHaveBeenCalledTimes(1);
+      expect(spyOnMatch4).toHaveBeenCalledWith('thrilling', 'heroics');
+    });
+
     describe('debug messages', () => {
       it('should write to console when a command matches if debug is on', () => {
         expect(logSpy).toHaveBeenCalledTimes(0);
