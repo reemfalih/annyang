@@ -1260,6 +1260,7 @@ describe('annyang', () => {
     let spyOnMatch2;
     let spyOnMatch3;
     let spyOnMatch4;
+    let recognition;
 
     beforeEach(() => {
       spyOnMatch1 = vi.fn();
@@ -1274,18 +1275,19 @@ describe('annyang', () => {
       });
 
       annyang.start({ continuous: true });
+      recognition = annyang.getSpeechRecognizer();
     });
 
     it('should match when phrase matches exactly', () => {
       expect(spyOnMatch1).not.toHaveBeenCalled();
-      annyang.getSpeechRecognizer().say('Time for some heroics');
+      recognition.say('Time for some heroics');
       expect(spyOnMatch1).toHaveBeenCalledTimes(1);
     });
 
     it('should match a commands even if the matched phrase is not the first SpeechRecognitionAlternative', () => {
       expect(spyOnMatch2).not.toHaveBeenCalled();
       // Our SpeechRecognition mock will create SpeechRecognitionAlternatives that append "and so on and so forth" to the phrase said
-      annyang.getSpeechRecognizer().say('That sounds like something out of science fiction');
+      recognition.say('That sounds like something out of science fiction');
       expect(spyOnMatch2).toHaveBeenCalledTimes(1);
     });
 
@@ -1295,7 +1297,7 @@ describe('annyang', () => {
         'Time for some (thrilling) heroics': spyOnMatch4,
       });
 
-      annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
+      recognition.say('Time for some thrilling heroics');
       expect(spyOnMatch1).toHaveBeenCalledTimes(1);
       expect(spyOnMatch4).not.toHaveBeenCalled();
     });
@@ -1307,8 +1309,8 @@ describe('annyang', () => {
         "You can't take the sky from me": 'spyOnMatch1',
         'Time for some (thrilling) heroics': 'globalSpyOnMatch',
       });
-      annyang.getSpeechRecognizer().say("You can't take the sky from me");
-      annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
+      recognition.say("You can't take the sky from me");
+      recognition.say('Time for some thrilling heroics');
 
       expect(spyOnMatch1).not.toHaveBeenCalled;
       expect(globalSpyOnMatch).toHaveBeenCalledTimes(1);
@@ -1323,9 +1325,9 @@ describe('annyang', () => {
         },
       });
 
-      annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
+      recognition.say('Time for some thrilling heroics');
       expect(spyOnMatch4).toHaveBeenCalledTimes(1);
-      annyang.getSpeechRecognizer().say('I feel the need for some thrilling heroics');
+      recognition.say('I feel the need for some thrilling heroics');
       expect(spyOnMatch4).toHaveBeenCalledTimes(2);
     });
 
@@ -1333,7 +1335,7 @@ describe('annyang', () => {
       it('should write to console when a command matches if debug is on', () => {
         expect(logSpy).toHaveBeenCalledTimes(0);
         annyang.debug(true);
-        annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
+        recognition.say('Time for some thrilling heroics');
         expect(logSpy).toHaveBeenCalledTimes(2);
         expect(logSpy).toHaveBeenLastCalledWith(
           'command matched: %cTime for some (thrilling) heroics',
@@ -1344,7 +1346,7 @@ describe('annyang', () => {
       it('should write to console with argument matched when command with an argument matches if debug is on', () => {
         expect(logSpy).toHaveBeenCalledTimes(0);
         annyang.debug(true);
-        annyang.getSpeechRecognizer().say("You can't take the sky from me");
+        recognition.say("You can't take the sky from me");
         expect(logSpy).toHaveBeenCalledTimes(3); // 1 console log for speech recognized + 1 for the command matching + 1 for the parameter
         expect(logSpy).toHaveBeenLastCalledWith('with parameters', ['sky']);
       });
@@ -1352,7 +1354,7 @@ describe('annyang', () => {
       it('should not write to console when a command matches if debug is off', () => {
         expect(logSpy).toHaveBeenCalledTimes(0);
         annyang.debug(false);
-        annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
+        recognition.say('Time for some thrilling heroics');
         expect(logSpy).not.toHaveBeenCalled();
       });
     });
