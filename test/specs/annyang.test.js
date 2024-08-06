@@ -1424,7 +1424,7 @@ describe('annyang', () => {
       expect(spyOnMatch2).toHaveBeenCalledTimes(1);
     });
 
-    // @TODO: Change behavior so that when adding a command with an existing command phrase, it will run both callbacks
+    // @TODO: Change behavior so that when adding a command with an existing command phrase, it will run both callbacks. Should also enable test `should write to console each speech recognition alternative that is recognized when a command matches`
     it('should ignore commands in subsequent addCommands calls if the command phrase is already registered', () => {
       annyang.addCommands({
         'Time for some (thrilling) heroics': spyOnMatch5,
@@ -1502,6 +1502,72 @@ describe('annyang', () => {
         annyang.debug(false);
         recognition.say('Time for some thrilling heroics');
         expect(logSpy).not.toHaveBeenCalled();
+      });
+
+      it.skip('should write to console each speech recognition alternative that is recognized when a command matches', () => {
+        expect(logSpy).toHaveBeenCalledTimes(0);
+        annyang.debug(true);
+        recognition.say('Time for some thrilling heroics');
+
+        console.log(logSpy.mock.calls);
+
+        expect(logSpy).toHaveBeenNthCalledWith(
+          1,
+          'Speech recognized: %cTime for some thrilling heroics',
+          logFormatString
+        );
+        expect(logSpy).toHaveBeenNthCalledWith(
+          2,
+          'Speech recognized: %cTime for some thrilling heroics and so on',
+          logFormatString
+        );
+        expect(logSpy).toHaveBeenNthCalledWith(
+          3,
+          'Speech recognized: %cTime for some thrilling heroics and so on and so forth',
+          logFormatString
+        );
+        expect(logSpy).toHaveBeenNthCalledWith(
+          4,
+          'Speech recognized: %cTime for some thrilling heroics and so on and so forth and so on',
+          logFormatString
+        );
+        expect(logSpy).toHaveBeenNthCalledWith(
+          5,
+          'Speech recognized: %cTime for some thrilling heroics and so on and so forth and so on and so forth',
+          logFormatString
+        );
+      });
+
+      it('should write to console each speech recognition alternative that is recognized when no command matches', () => {
+        expect(logSpy).toHaveBeenCalledTimes(0);
+        annyang.debug(true);
+        recognition.say("Let's do some thrilling heroics");
+
+        expect(logSpy).toHaveBeenNthCalledWith(
+          1,
+          "Speech recognized: %cLet's do some thrilling heroics",
+          logFormatString
+        );
+        expect(logSpy).toHaveBeenNthCalledWith(
+          2,
+          "Speech recognized: %cLet's do some thrilling heroics and so on",
+          logFormatString
+        );
+        expect(logSpy).toHaveBeenNthCalledWith(
+          3,
+          "Speech recognized: %cLet's do some thrilling heroics and so on and so forth",
+          logFormatString
+        );
+        expect(logSpy).toHaveBeenNthCalledWith(
+          4,
+          "Speech recognized: %cLet's do some thrilling heroics and so on and so forth and so on",
+          logFormatString
+        );
+        expect(logSpy).toHaveBeenNthCalledWith(
+          5,
+          "Speech recognized: %cLet's do some thrilling heroics and so on and so forth and so on and so forth",
+          logFormatString
+        );
       });
     });
   });
