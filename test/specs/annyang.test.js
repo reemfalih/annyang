@@ -1301,11 +1301,11 @@ describe('annyang', () => {
     });
 
     it("should accept callbacks in commands object by name if they are in the globalThis scope. e.g. {'hello': 'helloFunc'}", () => {
-      globalThis.spyOnMatch5 = vi.fn();
+      globalThis.globalSpyOnMatch = vi.fn();
       annyang.addCommands(
         {
           "You can't take the sky from me": 'spyOnMatch1',
-          'Time for some (thrilling) heroics': 'spyOnMatch5',
+          'Time for some (thrilling) heroics': 'globalSpyOnMatch',
         },
         true
       );
@@ -1313,7 +1313,7 @@ describe('annyang', () => {
       annyang.getSpeechRecognizer().say('Time for some thrilling heroics');
 
       expect(spyOnMatch1).not.toHaveBeenCalled;
-      expect(spyOnMatch5).toHaveBeenCalledTimes(1);
+      expect(globalSpyOnMatch).toHaveBeenCalledTimes(1);
     });
 
     describe('debug messages', () => {
