@@ -15,6 +15,7 @@
 - [ ] Check what happens if annyang is imported more than once in the same file or different files. Can it be a singleton?
 - [ ] See if can remove the condition that checks if `options.paused !== undefined` in start() as !!undefined is false
 - [ ] Go over skipped tests
+- [ ] Consider removing extraParameters from logMessage
 - [ ] TypeScript
 
 ### Change log
